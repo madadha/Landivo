@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'navigation' => [
+        'products' => 'Products',
+        'landing_pages' => 'Landing Pages',
+        'orders' => 'Orders', 'customers' => 'Customers & Leads', 'order_statuses' => 'Order Statuses', 'reviews' => 'Reviews',
+    ],
+    'products' => [
+        'singular' => 'Product', 'plural' => 'Products', 'create' => 'Create Product', 'edit' => 'Edit Product',
+        'sku' => 'SKU', 'price' => 'Price', 'compare_at_price' => 'Compare-at Price',
+        'currency' => 'Currency', 'quantity' => 'Quantity', 'status' => 'Status', 'image' => 'Primary Image',
+        'translations' => 'Translations', 'locale' => 'Language', 'name' => 'Product Name', 'description' => 'Description',
+    ],
+    'landing_pages' => [
+        'singular' => 'Landing Page', 'plural' => 'Landing Pages', 'create' => 'Create Landing Page', 'edit' => 'Edit Landing Page',
+        'slug' => 'Slug', 'template' => 'Template', 'product' => 'Product', 'status' => 'Status',
+        'default_locale' => 'Default Language', 'translations' => 'Translations', 'locale' => 'Language',
+        'title' => 'Page Title', 'description' => 'Page Description', 'font_family' => 'Font Family', 'heading_size' => 'Heading Size', 'body_size' => 'Body Size', 'primary_color' => 'Primary Color',
+    ],
+    'reviews' => ['singular' => 'Review', 'plural' => 'Reviews', 'name' => 'Reviewer Name', 'rating' => 'Rating', 'landing_page' => 'Landing Page', 'product' => 'Product', 'content' => 'Review Content', 'photo' => 'Reviewer Photo', 'approved' => 'Approved', 'featured' => 'Featured', 'created_at' => 'Created At'],
+    'orders' => ['singular' => 'Order', 'plural' => 'Orders', 'number' => 'Order Number', 'customer' => 'Customer', 'status' => 'Order Status', 'total' => 'Total', 'source' => 'Source', 'notes' => 'Notes'],
+    'customers' => ['singular' => 'Customer', 'plural' => 'Customers & Leads', 'name' => 'Name', 'phone' => 'Phone', 'email' => 'Email', 'city' => 'City', 'country' => 'Country'],
+    'order_statuses' => ['singular' => 'Order Status', 'plural' => 'Order Statuses', 'name_ar' => 'Arabic Name', 'name_en' => 'English Name', 'slug' => 'Slug', 'color' => 'Color', 'sort_order' => 'Sort Order', 'is_active' => 'Active', 'is_final' => 'Final'],
+    'statuses' => [
+        'draft' => 'Draft', 'active' => 'Active', 'archived' => 'Archived', 'published' => 'Published', 'unpublished' => 'Unpublished',
+    ],
+    'locales' => ['ar' => 'Arabic', 'en' => 'English'],
+    'actions' => ['create' => 'Create', 'save' => 'Save', 'cancel' => 'Cancel', 'edit' => 'Edit', 'delete' => 'Delete'],
+    'dashboard' => ['heading' => 'Leads & Performance', 'total_leads' => 'Total Leads', 'orders' => 'Orders', 'new_orders' => 'New Orders', 'revenue' => 'Revenue', 'landing_pages' => 'Landing Pages', 'captured' => 'All captured customers', 'submitted' => 'All submitted orders', 'awaiting_contact' => 'Awaiting contact', 'order_value' => 'Total order value', 'created_pages' => 'Created pages'],
+    'public' => ['order_title' => 'Order Now', 'price_after_discount' => 'Price after discount', 'price_before_discount' => 'Price before discount', 'name' => 'Name', 'phone' => 'Phone Number', 'quantity' => 'Quantity', 'city' => 'City', 'submit' => 'Submit Order', 'thank_you' => 'Thank you, your order was received', 'order_number' => 'Order Number', 'back' => 'Back to page', 'product_unavailable' => 'This product is currently unavailable.'],
+    'sections' => ['hero' => 'Hero', 'product_gallery' => 'Product Gallery', 'gallery' => 'Image Gallery', 'features' => 'Features', 'countdown' => 'Countdown', 'testimonials' => 'Testimonials', 'faq' => 'FAQ', 'order_form' => 'Order Form', 'whatsapp' => 'WhatsApp Button', 'footer' => 'Footer', 'video' => 'Video', 'social_media' => 'Social Media'],
+    'editor' => ['basic' => 'Basic Information', 'page_identity' => 'Page Identity', 'page_identity_description' => 'Define the page URL, product and publishing status.', 'translations' => 'Content & Languages', 'add_translation' => 'Add language', 'design' => 'Design', 'design_settings' => 'Visual Identity', 'design_description' => 'Control typography, scale and brand color.', 'visibility' => 'Visibility', 'show_price' => 'Show price', 'show_compare_price' => 'Show compare-at price', 'show_order_form' => 'Show order form', 'price_settings' => 'Price Appearance', 'price_description' => 'Customize the current and compare-at price separately.', 'current_price_color' => 'Current price color', 'compare_price_color' => 'Compare-at price color', 'current_price_size' => 'Current price size', 'compare_price_size' => 'Compare-at price size', 'sections' => 'Page Sections', 'page_sections' => 'Section Builder', 'sections_description' => 'Add sections, arrange them by drag and drop, and configure each section with purpose-built fields.', 'section_type' => 'Section type', 'order' => 'Order', 'visible' => 'Visible', 'section_title' => 'Section title', 'subtitle' => 'Supporting text', 'optional' => 'Optional', 'ends_at' => 'Offer ends at', 'countdown_style' => 'Countdown style', 'countdown_cards' => 'Separate cards', 'countdown_minimal' => 'Minimal', 'countdown_color' => 'Countdown number color', 'countdown_label_color' => 'Countdown label color', 'form_fields' => 'Order Form Fields', 'field_type' => 'Field type', 'field_label' => 'Field label', 'field_key' => 'Field key', 'placeholder' => 'Placeholder', 'required' => 'Required', 'invoice' => 'Show in invoice', 'options' => 'Options', 'options_help' => 'Enter one option per line.', 'add_field' => 'Add field', 'type_text' => 'Text', 'type_textarea' => 'Long text', 'type_select' => 'Dropdown', 'type_radio' => 'Single choice', 'type_checkbox' => 'Multiple choice', 'type_date' => 'Date', 'whatsapp_number' => 'WhatsApp number', 'button_label' => 'Button label', 'feature_one' => 'Feature 1', 'feature_two' => 'Feature 2', 'feature_three' => 'Feature 3', 'section_images' => 'Section images', 'video_url' => 'Video URL', 'add_section' => 'Add section'],
+    'field_types' => ['text' => 'Text', 'email' => 'Email', 'phone' => 'Phone', 'number' => 'Number', 'textarea' => 'Long text', 'select' => 'Dropdown', 'radio' => 'Single choice', 'checkbox' => 'Multiple choice', 'date' => 'Date', 'hidden' => 'Hidden', 'quantity' => 'Quantity', 'product_variant' => 'Product variant', 'address' => 'Address', 'city' => 'City', 'country' => 'Country', 'file' => 'File', 'image' => 'Image'],
+    'field_builder' => ['default_value' => 'Default value', 'validation_rules' => 'Validation rules', 'conditions' => 'Conditional visibility', 'condition_field' => 'Depends on field', 'condition_operator' => 'Operator', 'condition_value' => 'Expected value', 'add_condition' => 'Add condition'],
+    'thank_you' => ['mode' => 'After-submit destination', 'internal' => 'Internal thank-you page', 'external' => 'Redirect to external URL', 'title_ar' => 'Arabic page title', 'title_en' => 'English page title', 'message_ar' => 'Arabic details', 'message_en' => 'English details', 'button_ar' => 'Arabic button label', 'button_en' => 'English button label', 'countdown' => 'Countdown seconds', 'redirect_url' => 'Redirect URL', 'image_ar' => 'Arabic image', 'image_en' => 'English image', 'head_code' => 'Head code / Pixel', 'body_code' => 'Body code / Pixel'],
+    'seo' => ['title_ar' => 'SEO title (Arabic)', 'title_en' => 'SEO title (English)', 'description_ar' => 'SEO description (Arabic)', 'description_en' => 'SEO description (English)', 'keywords' => 'SEO keywords', 'canonical' => 'Canonical URL', 'noindex' => 'Hide from search engines', 'product_image_ar' => 'Product image (Arabic)', 'product_image_en' => 'Product image (English)', 'head_code' => 'Head Code', 'body_code' => 'Body Code'],
+    'builder' => ['media' => 'Media & Social', 'slider' => 'Image Slider', 'slider_description' => 'Manage slider images and playback settings.', 'autoplay' => 'Autoplay', 'interval' => 'Slide interval (ms)', 'link' => 'Link', 'color' => 'Color', 'add_social' => 'Add social link', 'title' => 'Title', 'button' => 'Button label', 'message' => 'Message', 'order' => 'Section Order', 'order_description' => 'Arrange the landing page sections in the exact order visitors should see.', 'add_section_order' => 'Add section to order'],
+];
