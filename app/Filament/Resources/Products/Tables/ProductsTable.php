@@ -15,8 +15,15 @@ class ProductsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('primary_image_path')->label(__('landivo.products.image'))->disk('public')->square()->size(56),
+                ImageColumn::make('primary_image_path')
+                    ->label(__('landivo.products.image'))
+                    ->disk('public')
+                    ->getStateUsing(fn ($record): ?string => $record->primary_image_path ?: $record->localizedMedia()?->file_path)
+                    ->square()
+                    ->size(56),
                 TextColumn::make('sku')->label(__('landivo.products.sku'))->searchable(),
+                TextColumn::make('media_count')->label('الوسائط')->counts('media')->badge()->color('info'),
+                TextColumn::make('variants_count')->label('المتغيرات')->counts('variants')->badge()->color('warning'),
                 TextColumn::make('price')->label(__('landivo.products.price'))->sortable(),
                 TextColumn::make('quantity')->label(__('landivo.products.quantity'))->sortable(),
                 TextColumn::make('status')->label(__('landivo.products.status'))->badge(),

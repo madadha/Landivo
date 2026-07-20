@@ -12,8 +12,13 @@ class Account extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'logo_path', 'favicon_path', 'company_details',
-        'default_locale', 'phone_country_code',
+        'default_locale', 'phone_country_code', 'settings',
     ];
+
+    protected function casts(): array
+    {
+        return ['settings' => 'array'];
+    }
 
     /** @return HasMany<User, $this> */
     public function users(): HasMany
@@ -49,5 +54,15 @@ class Account extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function sitePages(): HasMany
+    {
+        return $this->hasMany(SitePage::class);
+    }
+
+    public function contactMessages(): HasMany
+    {
+        return $this->hasMany(ContactMessage::class);
     }
 }

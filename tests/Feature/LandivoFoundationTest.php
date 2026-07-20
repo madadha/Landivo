@@ -6,16 +6,23 @@ namespace Tests\Feature;
 
 use App\LandingPageStatus;
 use App\Models\Account;
+use App\Models\Customer;
 use App\Models\LandingPage;
 use App\Models\LandingPageSection;
 use App\Models\LandingPageTranslation;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\OrderStatus;
 use App\Models\Product;
 use App\Models\ProductTranslation;
+use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\User;
+use App\Support\OrderMessageTemplate;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Database\Seeders\SitePagesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 final class LandivoFoundationTest extends TestCase
@@ -82,5 +89,456 @@ final class LandivoFoundationTest extends TestCase
         Review::create(['account_id' => $account->id, 'landing_page_id' => $page->id, 'name' => 'Hidden', 'rating' => 2, 'content' => 'Not visible', 'is_approved' => false, 'is_featured' => true]);
 
         $this->get(route('landing-pages.show', 'review-demo'))->assertOk()->assertSee('Sara')->assertDontSee('Hidden');
+    }
+
+    public function test_customer_can_submit_a_review_from_an_enabled_landing_page(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-public-reviews']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'public-review-demo',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => ['reviews_enabled' => true, 'reviews_allow_submission' => true],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'Review Demo']);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('data-review-open', false)
+            ->assertSee('المواسم منذ 10 سنوات')
+            ->assertSee('13 ألف عميل');
+
+        $this->post(route('landing-pages.reviews.store', $page->slug), [
+            'name' => 'Rayan',
+            'rating' => 5,
+            'content' => 'Excellent service',
+        ])->assertRedirect();
+
+        self::assertDatabaseHas('reviews', [
+            'landing_page_id' => $page->id,
+            'name' => 'Rayan',
+            'rating' => 5,
+            'source' => 'landing_page',
+            'is_approved' => false,
+            'is_verified_purchase' => false,
+        ]);
+    }
+
+    public function test_customer_can_submit_stars_without_an_optional_comment(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-rating-only']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'rating-only',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => ['reviews_enabled' => true, 'reviews_allow_submission' => true],
+        ]);
+
+        $this->post(route('landing-pages.reviews.store', $page->slug), [
+            'name' => 'Rayan',
+            'rating' => 5,
+        ])->assertRedirect();
+
+        self::assertDatabaseHas('reviews', [
+            'landing_page_id' => $page->id,
+            'rating' => 5,
+            'content' => '',
+        ]);
+    }
+
+    public function test_signed_order_review_is_saved_as_a_verified_purchase_once(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-verified-reviews']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'Rayan', 'phone' => '0500000000']);
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'new']);
+        $order = Order::create([
+            'account_id' => $account->id,
+            'customer_id' => $customer->id,
+            'order_status_id' => $status->id,
+            'order_number' => 'LDV-REVIEW-1',
+            'subtotal' => 100,
+            'total' => 100,
+            'currency' => 'AED',
+        ]);
+        $url = URL::temporarySignedRoute('reviews.order.form', now()->addHour(), ['order' => $order->id]);
+
+        $this->get($url)->assertOk()->assertSee('LDV-REVIEW-1');
+        $this->post($url, ['name' => 'Rayan', 'rating' => 4, 'content' => 'Very good'])->assertRedirect();
+
+        self::assertDatabaseHas('reviews', [
+            'order_id' => $order->id,
+            'account_id' => $account->id,
+            'rating' => 4,
+            'source' => 'order_link',
+            'is_verified_purchase' => true,
+        ]);
+        self::assertSame(1, Review::where('order_id', $order->id)->count());
+    }
+
+    public function test_professional_media_accordion_and_live_counters_are_rendered(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-media']);
+        $product = Product::create(['account_id' => $account->id, 'sku' => 'MEDIA-1', 'price' => 25, 'currency' => 'AED', 'quantity' => 7, 'status' => 'active']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'product_id' => $product->id,
+            'slug' => 'media-demo',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'slider_enabled' => true,
+                'slider_images_ar' => ['landing-pages/sliders/ar/one.jpg', 'landing-pages/sliders/ar/two.jpg'],
+                'video_enabled' => true,
+                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'accordion_enabled' => true,
+                'accordion_items' => [['title_ar' => 'سؤال تجريبي', 'title_en' => 'Test question', 'content_ar' => '<p>إجابة تجريبية</p>', 'content_en' => '<p>Test answer</p>', 'is_active' => true]],
+                'limited_stock_enabled' => true,
+                'limited_stock_source' => 'product',
+                'limited_stock_label_ar' => 'بقي {count} فقط',
+                'viewer_counter_enabled' => true,
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'عرض الوسائط']);
+
+        $this->get(route('landing-pages.show', 'media-demo'))
+            ->assertOk()
+            ->assertSee('data-media-slider', false)
+            ->assertSee('youtube-nocookie.com/embed/dQw4w9WgXcQ', false)
+            ->assertSee('سؤال تجريبي')
+            ->assertSee('بقي 7 فقط')
+            ->assertSee('data-viewer-counter', false);
+
+        $this->getJson(route('landing-pages.viewers', 'media-demo'))
+            ->assertOk()
+            ->assertJson(['count' => 1]);
+    }
+
+    public function test_multilingual_store_ticker_can_render_above_the_landing_page(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-ticker']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'ticker-demo',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'store_ticker' => [
+                    'enabled' => true,
+                    'placement' => 'top',
+                    'style' => 'gradient',
+                    'direction' => 'left',
+                    'items' => [[
+                        'text_ar' => 'توصيل مجاني للطلبات المختارة',
+                        'text_en' => 'Free delivery on selected orders',
+                        'icon' => 'truck',
+                        'is_active' => true,
+                    ]],
+                ],
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'Ticker Demo']);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('store-ticker ticker-style-gradient', false)
+            ->assertSee('توصيل مجاني للطلبات المختارة');
+
+        $this->withSession(['locale' => 'en'])
+            ->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('Free delivery on selected orders');
+    }
+
+    public function test_order_follow_up_becomes_due_and_all_changes_are_logged(): void
+    {
+        $this->travelTo('2026-07-20 09:00:00');
+
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-follow-ups']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'Rayan', 'phone' => '0500000000']);
+        $newStatus = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'new']);
+        $postponedStatus = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'مؤجل', 'name_en' => 'Postponed', 'slug' => 'postponed']);
+        $order = Order::create([
+            'account_id' => $account->id,
+            'customer_id' => $customer->id,
+            'order_status_id' => $newStatus->id,
+            'order_number' => 'LDV-FOLLOW-1',
+            'subtotal' => 100,
+            'total' => 100,
+            'currency' => 'AED',
+        ]);
+
+        self::assertFalse($order->isFollowUpDue());
+        self::assertDatabaseHas('order_activities', ['order_id' => $order->id, 'type' => 'system']);
+
+        $order->update([
+            'order_status_id' => $postponedStatus->id,
+            'follow_up_at' => now()->addDay(),
+            'follow_up_note' => 'العميل طلب الاتصال غدًا.',
+        ]);
+        $order->refresh();
+
+        self::assertTrue($order->hasPendingFollowUp());
+        self::assertFalse($order->isFollowUpDue());
+        self::assertDatabaseHas('order_activities', ['order_id' => $order->id, 'type' => 'follow_up']);
+
+        $this->travel(2)->days();
+        $order->refresh();
+        self::assertTrue($order->isFollowUpDue());
+
+        $order->update(['follow_up_completed_at' => now()]);
+        $order->refresh();
+        self::assertFalse($order->hasPendingFollowUp());
+        self::assertStringContainsString('تم إنجاز التذكير', (string) $order->activities()->first()?->body);
+    }
+
+    public function test_whatsapp_order_template_resolves_system_and_dynamic_form_tokens(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-message-template']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'ريان المدادحة', 'phone' => '0500000000', 'email' => 'rayan@example.com']);
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'new']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'message-template',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'order_whatsapp_message_ar' => 'مرحبًا {full_name_ar}، طلبك {order_number} وعرضك {offer} بقيمة {total} {currency}.',
+                'order_whatsapp_message_en' => 'Hello {customer_name}, your order is {order_number}.',
+            ],
+        ]);
+        $order = Order::create([
+            'account_id' => $account->id,
+            'landing_page_id' => $page->id,
+            'customer_id' => $customer->id,
+            'order_status_id' => $status->id,
+            'order_number' => 'LDV-MSG-1',
+            'subtotal' => 749,
+            'total' => 749,
+            'currency' => 'AED',
+            'form_data' => ['full_name_ar' => 'ريان المدادحة', 'offer' => 'العرض المتكامل'],
+        ]);
+
+        $message = OrderMessageTemplate::render($order, 'ar');
+
+        self::assertStringContainsString('ريان المدادحة', $message);
+        self::assertStringContainsString('LDV-MSG-1', $message);
+        self::assertStringContainsString('العرض المتكامل', $message);
+        self::assertStringContainsString('749.00 AED', $message);
+        self::assertStringNotContainsString('{offer}', $message);
+    }
+
+    public function test_delivered_status_deducts_product_variant_and_landing_page_stock_once_and_restores_it(): void
+    {
+        $account = Account::create(['name' => 'Inventory Account', 'slug' => 'inventory-account']);
+        $product = Product::create([
+            'account_id' => $account->id,
+            'sku' => 'OLIVE-16KG',
+            'price' => 599,
+            'currency' => 'AED',
+            'quantity' => 20,
+        ]);
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'OLIVE-16KG-PREMIUM',
+            'option_values' => ['size' => '16kg'],
+            'price' => 599,
+            'quantity' => 10,
+            'is_active' => true,
+        ]);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'product_id' => $product->id,
+            'product_variant_id' => $variant->id,
+            'slug' => 'inventory-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'track_inventory' => true,
+            'stock_quantity' => 8,
+            'low_stock_threshold' => 3,
+        ]);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'Customer', 'phone' => '0500000001']);
+        $newStatus = OrderStatus::create([
+            'account_id' => $account->id,
+            'name_ar' => 'جديد',
+            'name_en' => 'New',
+            'slug' => 'new',
+            'deduct_inventory' => false,
+        ]);
+        $deliveredStatus = OrderStatus::create([
+            'account_id' => $account->id,
+            'name_ar' => 'تم التسليم',
+            'name_en' => 'Delivered',
+            'slug' => 'delivered',
+            'is_final' => true,
+            'deduct_inventory' => true,
+        ]);
+        $order = Order::create([
+            'account_id' => $account->id,
+            'landing_page_id' => $page->id,
+            'customer_id' => $customer->id,
+            'order_status_id' => $newStatus->id,
+            'order_number' => 'LDV-STOCK-1',
+            'subtotal' => 1198,
+            'total' => 1198,
+            'currency' => 'AED',
+        ]);
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_variant_id' => $variant->id,
+            'product_name' => 'Olive Oil 16kg',
+            'quantity' => 2,
+            'unit_price' => 599,
+            'total' => 1198,
+        ]);
+
+        $order->update(['order_status_id' => $deliveredStatus->id]);
+
+        self::assertSame(18, $product->fresh()->quantity);
+        self::assertSame(8, $variant->fresh()->quantity);
+        self::assertSame(6, $page->fresh()->stock_quantity);
+        self::assertNotNull($order->fresh()->inventory_deducted_at);
+        self::assertDatabaseHas('order_activities', ['order_id' => $order->id, 'type' => 'inventory']);
+
+        $order->update(['notes' => 'No second deduction']);
+        self::assertSame(18, $product->fresh()->quantity);
+        self::assertSame(8, $variant->fresh()->quantity);
+        self::assertSame(6, $page->fresh()->stock_quantity);
+
+        $order->update(['order_status_id' => $newStatus->id]);
+
+        self::assertSame(20, $product->fresh()->quantity);
+        self::assertSame(10, $variant->fresh()->quantity);
+        self::assertSame(8, $page->fresh()->stock_quantity);
+        self::assertNull($order->fresh()->inventory_deducted_at);
+    }
+
+    public function test_products_support_localized_details_media_options_and_variant_translations(): void
+    {
+        $account = Account::create(['name' => 'Catalog Account', 'slug' => 'catalog-account']);
+        $product = Product::create([
+            'account_id' => $account->id,
+            'sku' => 'OLIVE-MULTI',
+            'price' => 599,
+            'currency' => 'AED',
+            'quantity' => 10,
+            'options' => [[
+                'name_ar' => 'الحجم',
+                'name_en' => 'Size',
+                'values' => [['code' => '16kg', 'label_ar' => '16 كيلو', 'label_en' => '16 KG']],
+            ]],
+        ]);
+        ProductTranslation::create([
+            'product_id' => $product->id,
+            'locale' => 'ar',
+            'name' => 'زيت زيتون',
+            'description' => 'وصف مختصر',
+            'details' => '<p>تفاصيل كاملة للمنتج</p>',
+        ]);
+        $product->media()->create([
+            'locale' => null,
+            'media_type' => 'image',
+            'file_path' => 'products/media/shared.webp',
+            'title' => 'Shared image',
+            'is_active' => true,
+            'sort_order' => 2,
+        ]);
+        $arabicMedia = $product->media()->create([
+            'locale' => 'ar',
+            'media_type' => 'image',
+            'file_path' => 'products/media/arabic.webp',
+            'title' => 'الصورة العربية',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'OLIVE-MULTI-16',
+            'option_values' => ['size' => '16kg'],
+            'price' => 599,
+            'quantity' => 5,
+            'is_active' => true,
+        ]);
+        $variant->translations()->createMany([
+            ['locale' => 'ar', 'name' => 'عبوة 16 كيلو', 'description' => 'الوصف بالعربية'],
+            ['locale' => 'en', 'name' => '16 KG Pack', 'description' => 'English description'],
+        ]);
+
+        $product->load(['translations', 'media']);
+        $variant->load('translations');
+
+        self::assertSame('Size', data_get($product->options, '0.name_en'));
+        self::assertSame('<p>تفاصيل كاملة للمنتج</p>', $product->translations->firstWhere('locale', 'ar')?->details);
+        self::assertSame($arabicMedia->id, $product->localizedMedia('ar')?->id);
+        self::assertSame('products/media/shared.webp', $product->localizedMedia('en')?->file_path);
+        self::assertSame('16 KG Pack', $variant->translation('en')?->name);
+    }
+
+    public function test_website_header_and_footer_menus_are_configurable(): void
+    {
+        Account::create([
+            'name' => 'Dynamic Navigation',
+            'slug' => 'dynamic-navigation',
+            'settings' => [
+                'header_menu' => [['label_ar' => 'كتالوجنا', 'label_en' => 'Catalog', 'url' => '/products', 'is_active' => true]],
+                'footer_menu' => [['label_ar' => 'الشروط القانونية', 'label_en' => 'Legal terms', 'url' => '/terms-and-conditions', 'is_active' => true]],
+            ],
+        ]);
+
+        $this->get(route('site.home'))
+            ->assertOk()
+            ->assertSee('كتالوجنا')
+            ->assertSee('الشروط القانونية')
+            ->assertSee(url('/terms-and-conditions'));
+    }
+
+    public function test_product_cards_link_to_a_complete_product_details_page(): void
+    {
+        $account = Account::create(['name' => 'Catalog', 'slug' => 'catalog-details']);
+        $product = Product::create([
+            'account_id' => $account->id,
+            'sku' => 'DETAIL-1',
+            'price' => 99,
+            'compare_at_price' => 120,
+            'currency' => 'AED',
+            'quantity' => 8,
+            'status' => 'active',
+        ]);
+        ProductTranslation::create([
+            'product_id' => $product->id,
+            'locale' => 'ar',
+            'name' => 'منتج بتفاصيل كاملة',
+            'description' => 'وصف المنتج المختصر',
+            'details' => '<h2>المكونات</h2><p>تفاصيل موثوقة وواضحة.</p>',
+        ]);
+
+        $this->get(route('site.home'))
+            ->assertOk()
+            ->assertSee(route('site.products.show', $product), false);
+
+        $this->get(route('site.products.show', $product))
+            ->assertOk()
+            ->assertSee('منتج بتفاصيل كاملة')
+            ->assertSee('تفاصيل موثوقة وواضحة.')
+            ->assertSee('99.00');
+    }
+
+    public function test_terms_and_conditions_page_is_seeded_in_both_languages(): void
+    {
+        Account::create(['name' => 'Legal', 'slug' => 'legal-pages']);
+        $this->seed(SitePagesSeeder::class);
+
+        $this->get('/terms-and-conditions')
+            ->assertOk()
+            ->assertSee('الأحكام والشروط')
+            ->assertSee('قبول الشروط');
+
+        $this->withSession(['locale' => 'en'])
+            ->get('/terms-and-conditions')
+            ->assertOk()
+            ->assertSee('Terms and conditions')
+            ->assertSee('Acceptance');
     }
 }

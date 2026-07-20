@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductTranslation extends Model
 {
-    protected $fillable = ['product_id', 'locale', 'name', 'description'];
+    protected $fillable = ['product_id', 'locale', 'name', 'description', 'details'];
 
     /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo

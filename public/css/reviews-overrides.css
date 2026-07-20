@@ -1,0 +1,8 @@
+.review-request-logo {
+    display: block;
+    width: auto;
+    max-width: 150px;
+    max-height: 64px;
+    object-fit: contain;
+    margin: 0 auto 14px;
+}

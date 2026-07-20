@@ -36,6 +36,23 @@ class OrderResource extends Resource
         return __('landivo.orders.plural');
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::query()
+            ->where('account_id', auth()->user()?->account_id)
+            ->whereNotNull('follow_up_at')
+            ->whereNull('follow_up_completed_at')
+            ->where('follow_up_at', '<=', now())
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('account_id', auth()->user()?->account_id);

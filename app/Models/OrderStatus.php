@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OrderStatus extends Model
 {
-    protected $fillable = ['account_id', 'name_ar', 'name_en', 'slug', 'color', 'sort_order', 'is_active', 'is_final'];
+    protected $fillable = ['account_id', 'name_ar', 'name_en', 'slug', 'color', 'sort_order', 'is_active', 'is_final', 'deduct_inventory'];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'is_final' => 'boolean'];
+        return ['is_active' => 'boolean', 'is_final' => 'boolean', 'deduct_inventory' => 'boolean'];
     }
 
     public function label(): string

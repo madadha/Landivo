@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LandingPage extends Model
 {
-    protected $fillable = ['account_id', 'product_id', 'slug', 'template', 'status', 'default_locale', 'published_at', 'settings'];
+    protected $fillable = ['account_id', 'product_id', 'product_variant_id', 'slug', 'template', 'status', 'default_locale', 'published_at', 'settings', 'track_inventory', 'stock_quantity', 'low_stock_threshold'];
 
     protected function casts(): array
     {
-        return ['status' => LandingPageStatus::class, 'published_at' => 'datetime', 'settings' => 'array'];
+        return ['status' => LandingPageStatus::class, 'published_at' => 'datetime', 'settings' => 'array', 'track_inventory' => 'boolean', 'stock_quantity' => 'integer', 'low_stock_threshold' => 'integer'];
     }
 
     /** @return BelongsTo<Account, $this> */
@@ -26,6 +26,11 @@ class LandingPage extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function productVariant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class);
     }
 
     /** @return HasMany<LandingPageTranslation, $this> */
