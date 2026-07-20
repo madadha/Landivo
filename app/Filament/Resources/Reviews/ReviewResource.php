@@ -36,6 +36,21 @@ class ReviewResource extends Resource
         return __('landivo.reviews.plural');
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::query()
+            ->where('account_id', auth()->user()?->account_id)
+            ->where('is_approved', false)
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('account_id', auth()->user()?->account_id);

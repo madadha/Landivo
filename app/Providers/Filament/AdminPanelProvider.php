@@ -8,6 +8,8 @@ use App\Filament\Pages\SystemSettings;
 use App\Filament\Resources\Roles\RoleResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Account;
+use App\Models\Order;
+use App\Models\Review;
 use Filament\Actions\Action;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -18,6 +20,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -48,6 +51,10 @@ class AdminPanelProvider extends PanelProvider
                 ? Storage::disk('public')->url(auth()->user()?->account?->logo_path ?? Account::query()->value('logo_path'))
                 : null)
             ->brandLogoHeight('3.5rem')
+            ->renderHook(PanelsRenderHook::TOPBAR_START, fn (): string => view('components.admin-order-notification', [
+                'newOrders' => Order::query()->where('account_id', auth()->user()?->account_id)->whereNull('archived_at')->whereHas('status', fn ($query) => $query->where('slug', 'new'))->count(),
+                'pendingReviews' => Review::query()->where('account_id', auth()->user()?->account_id)->where('is_approved', false)->count(),
+            ])->render())
             ->userMenuItems([
                 'dashboard' => Action::make('dashboard')->label('لوحة التحكم')->icon(Heroicon::OutlinedHome)->url(fn (): string => route('filament.admin.pages.dashboard'))->sort(-10),
                 'users' => Action::make('users')->label('المستخدمون')->icon(Heroicon::OutlinedUsers)->url(fn (): string => UserResource::getUrl())->sort(-5),

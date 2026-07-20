@@ -40,9 +40,8 @@ class OrderResource extends Resource
     {
         $count = static::getModel()::query()
             ->where('account_id', auth()->user()?->account_id)
-            ->whereNotNull('follow_up_at')
-            ->whereNull('follow_up_completed_at')
-            ->where('follow_up_at', '<=', now())
+            ->whereNull('archived_at')
+            ->whereHas('status', fn ($query) => $query->where('slug', 'new'))
             ->count();
 
         return $count > 0 ? (string) $count : null;
