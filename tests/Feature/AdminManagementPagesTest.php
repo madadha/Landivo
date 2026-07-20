@@ -11,6 +11,8 @@ use App\Models\Account;
 use App\Models\Customer;
 use App\Models\LandingPage;
 use App\Models\LandingPageTranslation;
+use App\Models\Product;
+use App\Models\ProductTranslation;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
@@ -95,5 +97,37 @@ final class AdminManagementPagesTest extends TestCase
             ->set('search', 'rayan@')
             ->assertSee('ريان المدادحة')
             ->assertDontSee('hidden@example.com');
+    }
+
+    public function test_products_page_renders_the_multilingual_product_and_professional_filters(): void
+    {
+        $product = Product::create([
+            'account_id' => $this->account->id,
+            'sku' => 'FILTER-001',
+            'price' => 125,
+            'currency' => 'AED',
+            'quantity' => 3,
+            'status' => 'active',
+        ]);
+        ProductTranslation::create([
+            'product_id' => $product->id,
+            'locale' => 'ar',
+            'name' => 'منتج اختبار الفلاتر',
+        ]);
+
+        $this->get('/admin/products')
+            ->assertOk()
+            ->assertSee('منتج اختبار الفلاتر')
+            ->assertSee('FILTER-001')
+            ->assertSee('حالة المنتج')
+            ->assertSee('حالة المخزون');
+    }
+
+    public function test_dashboard_contains_a_direct_public_site_button(): void
+    {
+        $this->get('/admin')
+            ->assertOk()
+            ->assertSee('فتح الموقع')
+            ->assertSee('href="'.url('/').'"', false);
     }
 }

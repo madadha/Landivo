@@ -20,6 +20,7 @@
                 <div class="ldv-hero-actions">
                     <a href="{{ \App\Filament\Resources\LandingPages\LandingPageResource::getUrl('create') }}" class="ldv-primary-action">إنشاء صفحة هبوط <span>←</span></a>
                     <a href="{{ \App\Filament\Pages\VisitorAnalytics::getUrl() }}" class="ldv-secondary-action">فتح التحليلات</a>
+                    <a href="{{ url('/') }}" target="_blank" rel="noopener" class="ldv-secondary-action">فتح الموقع ↗</a>
                 </div>
             </div>
             <div class="ldv-hero-score">
