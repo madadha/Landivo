@@ -9,6 +9,7 @@ use App\Models\LandingPage;
 use App\Models\LandingPageSection;
 use App\Models\LandingPageTranslation;
 use App\Models\MediaAsset;
+use App\Models\MarketingPopup;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatus;
@@ -50,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
             ProductVariantTranslation::class, ProductMedia::class,
             Order::class, OrderItem::class, OrderStatus::class, Review::class,
             SitePage::class, SitePageTranslation::class, ContactMessage::class, MediaAsset::class,
+            MarketingPopup::class,
         ] as $model) {
             $model::observe(AuditableObserver::class);
         }

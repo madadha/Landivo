@@ -9,6 +9,7 @@ use App\Models\LandingPage;
 use App\Models\Product;
 use App\Models\SitePage;
 use App\ProductStatus;
+use App\Services\MarketingPopupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -87,6 +88,15 @@ class SiteController extends Controller
             ? SitePage::query()->with('translations')->where('account_id', $account?->id)->where('status', 'published')->orderBy('sort_order')->get()
             : collect();
 
-        return ['account' => $account, 'settings' => (array) ($account?->settings ?? []), 'sitePages' => $sitePages];
+        return [
+            'account' => $account,
+            'settings' => (array) ($account?->settings ?? []),
+            'sitePages' => $sitePages,
+            'marketingPopups' => app(MarketingPopupService::class)->forPage(
+                $account?->id,
+                request()->path() === '/' ? '/' : request()->path(),
+                app()->getLocale(),
+            ),
+        ];
     }
 }

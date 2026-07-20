@@ -65,4 +65,9 @@ class Account extends Model
     {
         return $this->hasMany(ContactMessage::class);
     }
+
+    public function marketingPopups(): HasMany
+    {
+        return $this->hasMany(MarketingPopup::class);
+    }
 }

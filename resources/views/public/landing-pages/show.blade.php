@@ -51,6 +51,7 @@
     </style>
 </head>
 <body>{!! data_get($landingPage->settings, 'body_code') !!}
+@include('components.marketing-popups', ['marketingPopups' => $marketingPopups ?? collect()])
 @if(data_get($landingPage->settings, 'store_ticker.enabled', false) && data_get($landingPage->settings, 'store_ticker.placement', 'top') === 'top')
     @include('public.landing-pages.partials.store-ticker')
 @endif

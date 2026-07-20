@@ -14,6 +14,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\VisitorEvent;
 use App\Notifications\NewOrderNotification;
+use App\Services\MarketingPopupService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -113,7 +114,13 @@ class PublicLandingPageController extends Controller
 
         $currentViewers = $this->currentViewerCount($landingPage);
 
-        return view('public.landing-pages.show', compact('landingPage', 'showcaseProducts', 'purchaseNotifications', 'currentViewers'));
+        $marketingPopups = app(MarketingPopupService::class)->forPage(
+            $landingPage->account_id,
+            request()->path(),
+            app()->getLocale(),
+        );
+
+        return view('public.landing-pages.show', compact('landingPage', 'showcaseProducts', 'purchaseNotifications', 'currentViewers', 'marketingPopups'));
     }
 
     public function viewers(string $slug): JsonResponse

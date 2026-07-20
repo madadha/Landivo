@@ -5,6 +5,7 @@ use App\Http\Controllers\PublicLandingPageController;
 use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\MarketingPopupEventController;
 use App\LandingPageStatus;
 use App\Models\Account;
 use App\Models\LandingPage;
@@ -55,6 +56,10 @@ Route::get('/locale/{locale}', function (string $locale) {
 
     return back();
 })->name('locale.switch');
+
+Route::post('/marketing-popups/{marketingPopup}/event', MarketingPopupEventController::class)
+    ->middleware('throttle:60,1')
+    ->name('marketing-popups.event');
 
 Route::get('/l/{slug}', [PublicLandingPageController::class, 'show'])->name('landing-pages.show');
 Route::get('/l/{slug}/viewers', [PublicLandingPageController::class, 'viewers'])->name('landing-pages.viewers');
