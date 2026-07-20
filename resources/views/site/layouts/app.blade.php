@@ -29,6 +29,7 @@
     @if($account?->favicon_path)<link rel="icon" href="{{ Storage::disk('public')->url($account->favicon_path) }}">@endif
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="stylesheet" href="{{ asset('css/site.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ filemtime(public_path('css/fonts.css')) }}">
     @stack('styles')
     {!! $settings['seo_head_code'] ?? '' !!}
 </head>

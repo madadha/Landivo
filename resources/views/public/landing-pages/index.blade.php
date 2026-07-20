@@ -17,7 +17,7 @@
     @if(!empty($settings['google_analytics_id']))<script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($settings['google_analytics_id']) }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','{{ addslashes($settings['google_analytics_id']) }}');</script>@endif
     {!! $settings['seo_head_code'] ?? '' !!}
     @if($account?->favicon_path)<link rel="icon" href="{{ Storage::disk('public')->url($account->favicon_path) }}">@endif
-    <link rel="stylesheet" href="{{ asset('css/landing-index.css') }}"><link rel="stylesheet" href="{{ asset('css/homepage.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/landing-index.css') }}"><link rel="stylesheet" href="{{ asset('css/homepage.css') }}"><link rel="stylesheet" href="{{ asset('css/fonts.css') }}">
 </head>
 <body>
     <header class="site-header"><div class="header-inner"><a class="brand" href="{{ route('landing-pages.index') }}">@if($account?->logo_path)<img src="{{ Storage::disk('public')->url($account->logo_path) }}" alt="{{ $account->name }}">@else<span class="brand-mark">L</span>@endif<span>{{ $account?->name ?? 'Landivo' }}</span></a><a class="language-switch" href="{{ route('locale.switch', $isArabic ? 'en' : 'ar') }}">{{ $isArabic ? 'English' : 'العربية' }}</a></div></header>

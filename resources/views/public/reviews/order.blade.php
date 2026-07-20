@@ -7,6 +7,7 @@
     <title>{{ app()->getLocale() === 'ar' ? 'قيّم تجربتك' : 'Rate your experience' }}</title>
     <link rel="stylesheet" href="{{ asset('css/reviews.css') }}?v={{ filemtime(public_path('css/reviews.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/reviews-overrides.css') }}?v={{ filemtime(public_path('css/reviews-overrides.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ filemtime(public_path('css/fonts.css')) }}">
 </head>
 <body class="review-request-page">
     @php($isArabic = app()->getLocale() === 'ar')
