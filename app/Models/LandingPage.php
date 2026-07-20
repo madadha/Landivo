@@ -50,4 +50,16 @@ class LandingPage extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    /** @return HasMany<Order, $this> */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /** @return HasMany<VisitorEvent, $this> */
+    public function visitorEvents(): HasMany
+    {
+        return $this->hasMany(VisitorEvent::class);
+    }
 }

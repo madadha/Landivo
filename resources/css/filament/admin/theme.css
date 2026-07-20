@@ -1,5 +1,6 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 @import './login.css';
+@import './management-pages.css';
 @source '../../../../resources/views';
 @source '../../../../app/Filament';
 
