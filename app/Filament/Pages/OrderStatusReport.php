@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use Filament\Pages\Page;
@@ -32,6 +33,23 @@ class OrderStatusReport extends Page
             ->orderBy('sort_order')
             ->get();
 
-        return compact('rows', 'total', 'revenue');
+        $averageOrderValue = $total > 0 ? $revenue / $total : 0;
+
+        return compact('rows', 'total', 'revenue', 'averageOrderValue');
+    }
+
+    public function getOrdersUrl(?int $statusId = null): string
+    {
+        if (! $statusId) {
+            return OrderResource::getUrl('index');
+        }
+
+        return OrderResource::getUrl('index', [
+            'filters' => [
+                'order_status_id' => [
+                    'values' => [(string) $statusId],
+                ],
+            ],
+        ]);
     }
 }
