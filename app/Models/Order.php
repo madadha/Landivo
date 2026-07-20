@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
 
 class Order extends Model
 {
-    protected $fillable = ['account_id', 'landing_page_id', 'customer_id', 'order_status_id', 'order_number', 'subtotal', 'total', 'currency', 'source', 'utm_parameters', 'ip_address', 'user_agent', 'notes', 'follow_up_at', 'follow_up_note', 'follow_up_completed_at', 'inventory_deducted_at', 'form_data'];
+    protected $fillable = ['account_id', 'landing_page_id', 'customer_id', 'order_status_id', 'order_number', 'subtotal', 'total', 'currency', 'source', 'utm_parameters', 'ip_address', 'user_agent', 'notes', 'archived_at', 'follow_up_at', 'follow_up_note', 'follow_up_completed_at', 'inventory_deducted_at', 'form_data'];
 
     protected function casts(): array
     {
@@ -24,6 +24,7 @@ class Order extends Model
             'follow_up_at' => 'datetime',
             'follow_up_completed_at' => 'datetime',
             'inventory_deducted_at' => 'datetime',
+            'archived_at' => 'datetime',
         ];
     }
 
