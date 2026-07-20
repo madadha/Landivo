@@ -220,9 +220,12 @@ class PublicLandingPageController extends Controller
         }
 
         $validated = $request->validate($rules);
+        $standardTrackingKeys = collect(['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']);
         $trackingKeys = collect(data_get($landingPage->settings, 'tracking_parameters', []))
             ->pluck('key')
             ->filter(fn ($key): bool => is_string($key) && preg_match('/^[A-Za-z][A-Za-z0-9_-]*$/', $key) === 1)
+            ->merge($standardTrackingKeys)
+            ->unique()
             ->values();
         $trackingValues = collect($request->query())->only($trackingKeys->all())->all();
         $customValues = $validated['custom'] ?? [];

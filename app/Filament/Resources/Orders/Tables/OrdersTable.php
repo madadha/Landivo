@@ -40,6 +40,10 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('total')->label(__('landivo.orders.total'))->sortable(),
                 TextColumn::make('source')->label(__('landivo.orders.source')),
+                TextColumn::make('utm_parameters.utm_campaign')
+                    ->label('الحملة الإعلانية')
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('ip_address')->label('IP')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->dateTime()->sortable(),
             ])

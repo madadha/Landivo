@@ -41,6 +41,38 @@ class OrderForm
                 ])
                 ->columns(2),
 
+            Section::make('بيانات الحملة الإعلانية')
+                ->description('المصدر والحملة التسويقية المحفوظان تلقائيًا من رابط صفحة الهبوط.')
+                ->icon('heroicon-o-megaphone')
+                ->schema([
+                    TextInput::make('campaign_source')
+                        ->label('مصدر الإعلان / UTM Source')
+                        ->formatStateUsing(fn ($record): ?string => data_get($record?->utm_parameters, 'utm_source') ?: $record?->source)
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('campaign_name')
+                        ->label('الحملة الإعلانية / UTM Campaign')
+                        ->formatStateUsing(fn ($record): ?string => data_get($record?->utm_parameters, 'utm_campaign'))
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('campaign_medium')
+                        ->label('وسيلة الإعلان / UTM Medium')
+                        ->formatStateUsing(fn ($record): ?string => data_get($record?->utm_parameters, 'utm_medium'))
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('campaign_content')
+                        ->label('محتوى الإعلان / UTM Content')
+                        ->formatStateUsing(fn ($record): ?string => data_get($record?->utm_parameters, 'utm_content'))
+                        ->disabled()
+                        ->dehydrated(false),
+                    TextInput::make('campaign_term')
+                        ->label('الكلمة الإعلانية / UTM Term')
+                        ->formatStateUsing(fn ($record): ?string => data_get($record?->utm_parameters, 'utm_term'))
+                        ->disabled()
+                        ->dehydrated(false),
+                ])
+                ->columns(2),
+
             Section::make('التأجيل والتذكير')
                 ->description('حدد موعدًا للعودة إلى العميل. سيظهر تنبيه واضح عند حلول الموعد فقط.')
                 ->icon('heroicon-o-bell-alert')

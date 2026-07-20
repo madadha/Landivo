@@ -79,6 +79,38 @@ final class LandivoFoundationTest extends TestCase
         self::assertDatabaseHas('order_items', ['product_id' => $product->id, 'quantity' => 2]);
     }
 
+    public function test_standard_utm_parameters_are_preserved_by_the_form_and_saved_with_the_order(): void
+    {
+        $account = Account::create(['name' => 'Campaign Account', 'slug' => 'campaign-account']);
+        OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'New', 'name_en' => 'New', 'slug' => 'new']);
+        $product = Product::create(['account_id' => $account->id, 'sku' => 'CAMPAIGN-1', 'price' => 100, 'currency' => 'AED', 'status' => 'active']);
+        ProductTranslation::create(['product_id' => $product->id, 'locale' => 'ar', 'name' => 'Campaign Product']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'product_id' => $product->id,
+            'slug' => 'campaign-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'Campaign Offer']);
+
+        $this->get(route('landing-pages.show', ['slug' => $page->slug, 'utm_source' => 'facebook', 'utm_campaign' => 'summer']))
+            ->assertOk()
+            ->assertSee('utm_source=facebook', false)
+            ->assertSee('utm_campaign=summer', false);
+
+        $this->post(route('landing-pages.submit', ['slug' => $page->slug, 'utm_source' => 'facebook', 'utm_campaign' => 'summer']), [
+            'name' => 'Campaign Customer',
+            'phone' => '0500000099',
+            'quantity' => 1,
+        ])->assertOk();
+
+        $order = Order::query()->latest('id')->firstOrFail();
+        self::assertSame('facebook', $order->source);
+        self::assertSame('facebook', data_get($order->utm_parameters, 'utm_source'));
+        self::assertSame('summer', data_get($order->utm_parameters, 'utm_campaign'));
+    }
+
     public function test_featured_approved_reviews_are_rendered_on_a_landing_page(): void
     {
         $account = Account::create(['name' => 'Acme', 'slug' => 'acme-reviews']);
