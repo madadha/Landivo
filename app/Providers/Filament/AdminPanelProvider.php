@@ -5,11 +5,12 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\EditProfile;
 use App\Filament\Pages\SystemSettings;
+use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Roles\RoleResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Account;
 use App\Models\Order;
-use App\Models\Review;
+use App\Models\OrderStatus;
 use Filament\Actions\Action;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -51,10 +52,22 @@ class AdminPanelProvider extends PanelProvider
                 ? Storage::disk('public')->url(auth()->user()?->account?->logo_path ?? Account::query()->value('logo_path'))
                 : null)
             ->brandLogoHeight('3.5rem')
-            ->renderHook(PanelsRenderHook::TOPBAR_START, fn (): string => view('components.admin-order-notification', [
-                'newOrders' => Order::query()->where('account_id', auth()->user()?->account_id)->whereNull('archived_at')->whereHas('status', fn ($query) => $query->where('slug', 'new'))->count(),
-                'pendingReviews' => Review::query()->where('account_id', auth()->user()?->account_id)->where('is_approved', false)->count(),
-            ])->render())
+            ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, function (): string {
+                $accountId = auth()->user()?->account_id;
+                $newStatus = OrderStatus::query()
+                    ->where('account_id', $accountId)
+                    ->where('slug', 'new')
+                    ->first();
+                $newOrders = $newStatus
+                    ? Order::query()->where('account_id', $accountId)->whereNull('archived_at')->where('order_status_id', $newStatus->getKey())->count()
+                    : 0;
+                $ordersUrl = OrderResource::getUrl('index', $newStatus ? [
+                    'filters' => ['order_status_id' => ['values' => [(string) $newStatus->getKey()]]],
+                ] : []);
+
+                return view('components.admin-order-notification', compact('newOrders', 'ordersUrl'))->render();
+            })
+            ->renderHook(PanelsRenderHook::PAGE_HEADER_ACTIONS_BEFORE, fn (): string => view('components.admin-save-action')->render())
             ->userMenuItems([
                 'dashboard' => Action::make('dashboard')->label('لوحة التحكم')->icon(Heroicon::OutlinedHome)->url(fn (): string => route('filament.admin.pages.dashboard'))->sort(-10),
                 'users' => Action::make('users')->label('المستخدمون')->icon(Heroicon::OutlinedUsers)->url(fn (): string => UserResource::getUrl())->sort(-5),

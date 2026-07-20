@@ -21,7 +21,13 @@ class OrdersTable
             ->columns([
                 TextColumn::make('order_number')->label(__('landivo.orders.number'))->searchable(),
                 TextColumn::make('customer.name')->label(__('landivo.orders.customer'))->searchable(),
-                TextColumn::make('status.name_ar')->label(__('landivo.orders.status'))->badge()->extraAttributes(fn ($record): array => ['style' => 'background-color: '.($record->status?->color ?: '#64748b').';color:#fff']),
+                TextColumn::make('status.name_ar')
+                    ->label(__('landivo.orders.status'))
+                    ->weight('bold')
+                    ->extraAttributes(fn ($record): array => [
+                        'class' => 'ldv-order-status-text',
+                        'style' => 'color: '.($record->status?->color ?: '#64748b').' !important',
+                    ]),
                 TextColumn::make('landingPage.slug')->label('صفحة الهبوط')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('follow_up_at')
                     ->label('التذكير')
