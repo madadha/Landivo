@@ -686,8 +686,12 @@ class LandingPageForm
                                 Section::make('شريط الأخبار والإعلانات / Announcement ticker')
                                     ->description('شريط متحرك ومتعدد اللغات للعروض، الشحن، التنبيهات والروابط المهمة. يظهر أعلى الصفحة أو بعد الفوتر.')
                                     ->schema([
+                                        Toggle::make('settings.store_ticker.enabled')
+                                            ->label('تفعيل الشريط / Enable ticker')
+                                            ->helperText('فعّل هذا الخيار لإظهار الشريط في صفحة الهبوط. تبقى الأخبار محفوظة عند إيقافه. / Enable to display the ticker; items remain saved when disabled.')
+                                            ->default(false)
+                                            ->live(),
                                         Grid::make(4)->schema([
-                                            Toggle::make('settings.store_ticker.enabled')->label('تفعيل الشريط / Enable ticker')->default(false)->live(),
                                             Select::make('settings.store_ticker.placement')->label('الموقع / Placement')->options([
                                                 'top' => 'أعلى صفحة الهبوط / Page top',
                                                 'after_footer' => 'أسفل الفوتر / After footer',
