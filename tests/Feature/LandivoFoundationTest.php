@@ -153,6 +153,39 @@ final class LandivoFoundationTest extends TestCase
             ->assertDontSee('hidden-social-test', false);
     }
 
+    public function test_social_media_icon_shape_overrides_the_base_link_radius(): void
+    {
+        $account = Account::create(['name' => 'Social Shape', 'slug' => 'social-shape']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'social-shape-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'social_icon_shape' => 'square',
+                'social_media' => [[
+                    'platform' => 'instagram',
+                    'url' => 'https://instagram.com/social-shape-test',
+                    'is_active' => true,
+                ]],
+                'section_order' => [[
+                    'type' => 'social_media',
+                    'is_visible' => true,
+                ]],
+            ],
+        ]);
+        LandingPageTranslation::create([
+            'landing_page_id' => $page->id,
+            'locale' => 'ar',
+            'title' => 'Social Shape Offer',
+        ]);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('.social-section .social-grid .social-icon{width:54px;height:54px;padding:0;border-radius:4px', false)
+            ->assertSee('social-shape-test', false);
+    }
+
     public function test_standard_utm_parameters_are_preserved_by_the_form_and_saved_with_the_order(): void
     {
         $account = Account::create(['name' => 'Campaign Account', 'slug' => 'campaign-account']);
