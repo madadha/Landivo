@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Pages;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Reviews\ReviewResource;
 use App\Models\Customer;
+use App\Support\BankTransferMessage;
 use App\Support\OrderMessageTemplate;
 use App\Support\WhatsAppUrl;
 use Filament\Actions\Action;
@@ -106,6 +107,12 @@ class EditOrder extends EditRecord
                 ->color('success')
                 ->url(fn ($record): string => WhatsAppUrl::forOrder($record, 'الفاتورة: '.URL::temporarySignedRoute('orders.invoice', now()->addDays(7), ['order' => $record->id])), true)
                 ->visible(fn ($record): bool => WhatsAppUrl::hasValidOrderPhone($record)),
+            Action::make('whatsapp_bank_details')
+                ->label('واتساب بيانات البنك')
+                ->icon('heroicon-o-banknotes')
+                ->color('info')
+                ->url(fn ($record): string => WhatsAppUrl::forOrder($record, BankTransferMessage::render($record)), true)
+                ->visible(fn ($record): bool => WhatsAppUrl::hasValidOrderPhone($record) && BankTransferMessage::isConfigured($record->account)),
             Action::make('whatsapp_review')
                 ->label('واتساب + رابط التقييم')
                 ->icon('heroicon-o-star')

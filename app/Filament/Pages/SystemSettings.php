@@ -69,6 +69,37 @@ class SystemSettings extends Page
                 Select::make('default_locale')->label('اللغة الافتراضية / Default language')->options(['ar' => 'العربية', 'en' => 'English'])->required(),
                 TextInput::make('phone_country_code')->label('كود الدولة للهاتف / Phone country code')->prefix('+')->numeric()->required()->maxLength(6),
             ])->columns(2),
+            Section::make('بيانات التحويل البنكي / Bank transfer details')
+                ->description('تُستخدم هذه البيانات لإنشاء رسالة واتساب جاهزة وآمنة من صفحة الطلب.')
+                ->schema([
+                    Grid::make(2)->schema([
+                        TextInput::make('settings.bank_name')
+                            ->label('اسم البنك / Bank Name')
+                            ->default('ADIB')
+                            ->maxLength(120),
+                        TextInput::make('settings.bank_account_holder')
+                            ->label('اسم صاحب الحساب / Account Holder Name')
+                            ->default('RAAD SATEA SALEM ALMDADHA')
+                            ->maxLength(180),
+                        TextInput::make('settings.bank_account_number')
+                            ->label('رقم الحساب / Account Number')
+                            ->default('19546383')
+                            ->maxLength(60),
+                        TextInput::make('settings.bank_iban')
+                            ->label('رقم الآيبان / IBAN')
+                            ->default('AE950500000000019546383')
+                            ->maxLength(60),
+                        TextInput::make('settings.bank_swift')
+                            ->label('رمز SWIFT / SWIFT Code')
+                            ->default('ABDIAEADXXX')
+                            ->maxLength(30),
+                        TextInput::make('settings.bank_currency')
+                            ->label('العملة / Currency')
+                            ->default('AED')
+                            ->maxLength(10),
+                    ]),
+                ])
+                ->collapsible(),
             Section::make('أمان لوحة التحكم / Admin security')
                 ->description('تحكم بخطوات حماية تسجيل دخول مستخدمي لوحة الإدارة.')
                 ->schema([
