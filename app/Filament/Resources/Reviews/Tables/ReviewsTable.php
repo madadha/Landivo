@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
@@ -17,8 +18,25 @@ class ReviewsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label(__('landivo.reviews.name'))->searchable(),
-                TextColumn::make('rating')->label(__('landivo.reviews.rating'))->formatStateUsing(fn ($state): string => str_repeat('★', (int) $state))->color('warning')->sortable(),
+                ImageColumn::make('photo_path')
+                    ->label('الصورة')
+                    ->disk('public')
+                    ->circular(),
+                TextColumn::make('name')
+                    ->label(__('landivo.reviews.name'))
+                    ->description(fn ($record): ?string => $record->customer_email)
+                    ->searchable(),
+                TextColumn::make('content')
+                    ->label('نص التقييم')
+                    ->limit(55)
+                    ->wrap()
+                    ->placeholder('تقييم بالنجوم فقط')
+                    ->toggleable(),
+                TextColumn::make('rating')
+                    ->label(__('landivo.reviews.rating'))
+                    ->formatStateUsing(fn ($state): string => str_repeat('★', (int) $state))
+                    ->color('warning')
+                    ->sortable(),
                 IconColumn::make('is_verified_purchase')->label('شراء موثق')->boolean(),
                 TextColumn::make('order.order_number')->label('رقم الطلب')->searchable()->toggleable(),
                 TextColumn::make('landingPage.slug')->label(__('landivo.reviews.landing_page'))->toggleable(),
@@ -33,6 +51,7 @@ class ReviewsTable
             ])
             ->filters([
                 TernaryFilter::make('is_approved')->label('حالة الموافقة'),
+                TernaryFilter::make('is_featured')->label('التقييمات المميزة'),
                 TernaryFilter::make('is_verified_purchase')->label('شراء موثق'),
             ])
             ->recordActions([

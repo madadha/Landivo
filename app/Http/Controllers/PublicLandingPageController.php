@@ -12,6 +12,7 @@ use App\Models\OrderItem;
 use App\Models\OrderStatus;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Review;
 use App\Models\VisitorEvent;
 use App\Notifications\NewOrderNotification;
 use App\Services\MarketingPopupService;
@@ -27,10 +28,36 @@ class PublicLandingPageController extends Controller
 {
     public function show(string $slug): View
     {
-        $landingPage = LandingPage::with(['translations', 'sections', 'product.translations', 'product.media', 'productVariant.translations', 'reviews' => fn ($query) => $query->where('is_approved', true)->latest()->limit(50)])
+        $landingPage = LandingPage::with(['translations', 'sections', 'product.translations', 'product.media', 'productVariant.translations'])
             ->where('slug', $slug)
             ->where('status', LandingPageStatus::Published->value)
             ->firstOrFail();
+
+        $selectedReviewIds = collect(data_get($landingPage->settings, 'reviews_showcase_review_ids', []))
+            ->map(fn ($id): int => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $reviewsQuery = Review::query()
+            ->where('account_id', $landingPage->account_id)
+            ->where('is_approved', true);
+
+        if ($selectedReviewIds->isNotEmpty()) {
+            $reviews = $reviewsQuery
+                ->whereIn('id', $selectedReviewIds)
+                ->get()
+                ->sortBy(fn (Review $review): int => $selectedReviewIds->search($review->id))
+                ->values();
+        } else {
+            $reviews = $reviewsQuery
+                ->where('landing_page_id', $landingPage->id)
+                ->latest()
+                ->limit(50)
+                ->get();
+        }
+
+        $landingPage->setRelation('reviews', $reviews);
 
         VisitorEvent::create([
             'account_id' => $landingPage->account_id,

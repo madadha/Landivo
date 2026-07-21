@@ -187,6 +187,7 @@
         @php($accordionTitle = data_get($landingPage->settings,app()->getLocale()==='ar'?'accordion_title_ar':'accordion_title_en') ?: (app()->getLocale()==='ar'?'الأسئلة الشائعة':'Frequently Asked Questions'))
         <section class="section accordion-section accordion-style-{{ $accordionStyle }} accordion-icon-{{ $accordionIcon }}" style="order:{{ $sectionPosition('faq',38) }};--accordion-accent:{{ data_get($landingPage->settings,'accordion_accent','#4f46e5') }};--accordion-bg:{{ data_get($landingPage->settings,'accordion_background','#ffffff') }};--accordion-text:{{ data_get($landingPage->settings,'accordion_text_color','#172033') }};--accordion-align:{{ data_get($landingPage->settings,'accordion_title_alignment','start') }}" data-accordion data-multiple="{{ data_get($landingPage->settings,'accordion_allow_multiple',false)?'1':'0' }}"><h2>{{ $accordionTitle }}</h2><div class="accordion-list">@foreach($accordionItems as $item)@php($itemTitle=$item[app()->getLocale()==='ar'?'title_ar':'title_en']??null)@php($itemContent=$item[app()->getLocale()==='ar'?'content_ar':'content_en']??null)@if($itemTitle)<details class="accordion-item" @if($loop->first && data_get($landingPage->settings,'accordion_first_open',true)) open @endif><summary>{{ $itemTitle }}</summary><div class="accordion-content">{!! $itemContent !!}</div></details>@endif @endforeach</div></section>
     @endif
+    @include('public.landing-pages.partials.reviews-showcase')
     @php($orderedSections = $sectionOrder->isEmpty() ? $landingPage->sections : $landingPage->sections->sortBy(fn ($section) => ($position = $sectionOrder->search($section->type->value)) === false ? 9999 : $position)->values())
     @foreach($orderedSections as $section)
         @continue(!$section->is_visible)
@@ -212,7 +213,6 @@
                 @if(!empty($settings['video_url']))<section class="section"><h2>{{ $settings['title'] ?? __('landivo.sections.video') }}</h2><a class="video-link" href="{{ $settings['video_url'] }}" target="_blank" rel="noopener">{{ $settings['label'] ?? __('landivo.editor.video_url') }}</a></section>@endif
                 @break
             @case('testimonials')
-                @if($landingPage->reviews->isNotEmpty())<section class="section"><h2>{{ $settings['title'] ?? __('landivo.sections.testimonials') }}</h2><div class="reviews">@foreach($landingPage->reviews as $review)<article class="review"><strong>{{ $review->name }}</strong><div class="stars">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div><p>{{ strip_tags($review->content) }}</p></article>@endforeach</div></section>@endif
                 @break
             @case('whatsapp')
                 @if(!empty($settings['number']))<section class="section" style="text-align:center"><a class="wa" href="{{ \App\Support\WhatsAppUrl::make($settings['number'], '', $landingPage->account?->phone_country_code) }}" target="_blank">{{ $settings['label'] ?? __('landivo.sections.whatsapp') }}</a></section>@endif

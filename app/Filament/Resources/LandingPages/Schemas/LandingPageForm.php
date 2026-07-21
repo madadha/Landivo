@@ -7,6 +7,7 @@ use App\LandingPageStatus;
 use App\LandingSectionType;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Review;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language as CodeLanguage;
@@ -27,6 +28,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class LandingPageForm
 {
@@ -363,6 +365,55 @@ class LandingPageForm
                                             TextInput::make('settings.reviews_trust_text_ar')->label('نص الثقة تحت الشعار')->placeholder('المواسم منذ 10 سنوات — أكثر من 13 ألف عميل استخدموا منتجاتنا'),
                                             TextInput::make('settings.reviews_trust_text_en')->label('Trust text under logo')->placeholder('Al Mawasem for 10 years — trusted by more than 13,000 customers'),
                                         ])->visible(fn (Get $get): bool => (bool) $get('settings.reviews_enabled')),
+                                        Section::make('عرض التقييمات داخل الصفحة / Reviews Showcase')
+                                            ->description('اختر التقييمات المعتمدة التي تريد إبرازها. يعرض التصميم ثلاث بطاقات في كل حركة على الحاسوب وبطاقة واحدة على الهاتف.')
+                                            ->schema([
+                                                Grid::make(3)->schema([
+                                                    Toggle::make('settings.reviews_showcase_enabled')->label('إظهار قسم التقييمات / Show section')->default(false)->live(),
+                                                    Toggle::make('settings.reviews_showcase_autoplay')->label('تشغيل الحركة تلقائيًا / Autoplay')->default(true),
+                                                    Toggle::make('settings.reviews_showcase_verified_badge')->label('إظهار شارة شراء موثق / Verified badge')->default(true),
+                                                ]),
+                                                Select::make('settings.reviews_showcase_review_ids')
+                                                    ->label('التقييمات المختارة / Selected reviews')
+                                                    ->helperText('تظهر التقييمات المعتمدة فقط. اتركه فارغًا لعرض التقييمات المعتمدة المرتبطة بصفحة الهبوط نفسها.')
+                                                    ->options(fn (): array => Review::query()
+                                                        ->where('account_id', auth()->user()?->account_id)
+                                                        ->where('is_approved', true)
+                                                        ->latest()
+                                                        ->get()
+                                                        ->mapWithKeys(fn (Review $review): array => [
+                                                            $review->id => str_repeat('★', $review->rating).' — '.$review->name.(filled($review->content) ? ' — '.Str::limit(strip_tags($review->content), 55) : ''),
+                                                        ])
+                                                        ->all())
+                                                    ->multiple()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->visible(fn (Get $get): bool => (bool) $get('settings.reviews_showcase_enabled'))
+                                                    ->columnSpanFull(),
+                                                Grid::make(2)->schema([
+                                                    TextInput::make('settings.reviews_showcase_title_ar')->label('عنوان القسم بالعربية')->placeholder('ماذا يقول عملاؤنا؟'),
+                                                    TextInput::make('settings.reviews_showcase_title_en')->label('Section title in English')->placeholder('What our customers say'),
+                                                    TextInput::make('settings.reviews_showcase_subtitle_ar')->label('الوصف بالعربية')->placeholder('تجارب حقيقية من عملائنا'),
+                                                    TextInput::make('settings.reviews_showcase_subtitle_en')->label('English subtitle')->placeholder('Real experiences from our customers'),
+                                                ])->visible(fn (Get $get): bool => (bool) $get('settings.reviews_showcase_enabled')),
+                                                Grid::make(4)->schema([
+                                                    Select::make('settings.reviews_showcase_style')->label('التصميم / Style')->options([
+                                                        'elegant' => 'أنيق / Elegant',
+                                                        'soft' => 'ناعم / Soft',
+                                                        'glass' => 'زجاجي / Glass',
+                                                        'dark' => 'داكن / Dark',
+                                                    ])->default('elegant'),
+                                                    Select::make('settings.reviews_showcase_alignment')->label('محاذاة العنوان / Title alignment')->options([
+                                                        'start' => 'البداية / Start',
+                                                        'center' => 'الوسط / Center',
+                                                        'end' => 'النهاية / End',
+                                                    ])->default('center'),
+                                                    TextInput::make('settings.reviews_showcase_interval')->label('مدة الحركة بالثواني')->numeric()->integer()->minValue(2)->maxValue(30)->default(5),
+                                                    ColorPicker::make('settings.reviews_showcase_accent')->label('اللون الأساسي / Accent')->default('#F59E0B'),
+                                                ])->visible(fn (Get $get): bool => (bool) $get('settings.reviews_showcase_enabled')),
+                                            ])
+                                            ->visible(fn (Get $get): bool => (bool) $get('settings.reviews_enabled'))
+                                            ->collapsible(),
                                     ])->collapsible(),
                                 Section::make('عداد الكمية المحدودة / Limited Stock Counter')
                                     ->description('اعرض الندرة بشكل مهني من كمية يدوية أو من مخزون المنتج المرتبط.')

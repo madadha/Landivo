@@ -395,6 +395,52 @@ final class LandivoFoundationTest extends TestCase
         $this->get(route('landing-pages.show', 'review-demo'))->assertOk()->assertSee('Sara')->assertDontSee('Hidden');
     }
 
+    public function test_landing_page_can_render_only_selected_approved_reviews_in_the_showcase(): void
+    {
+        $account = Account::create(['name' => 'Acme', 'slug' => 'acme-curated-reviews']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'curated-reviews',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'reviews_enabled' => true,
+                'reviews_showcase_enabled' => true,
+                'reviews_showcase_title_ar' => 'تجارب عملائنا المختارة',
+                'reviews_showcase_style' => 'soft',
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'Curated Reviews']);
+
+        $selected = Review::create([
+            'account_id' => $account->id,
+            'name' => 'Selected Customer',
+            'rating' => 5,
+            'content' => 'Selected review content',
+            'is_approved' => true,
+        ]);
+        Review::create([
+            'account_id' => $account->id,
+            'landing_page_id' => $page->id,
+            'name' => 'Unselected Customer',
+            'rating' => 4,
+            'content' => 'Should not be rendered',
+            'is_approved' => true,
+        ]);
+
+        $page->update(['settings' => array_merge($page->settings, [
+            'reviews_showcase_review_ids' => [$selected->id],
+        ])]);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('data-reviews-showcase', false)
+            ->assertSee('reviews-showcase--soft', false)
+            ->assertSee('تجارب عملائنا المختارة')
+            ->assertSee('Selected Customer')
+            ->assertDontSee('Unselected Customer');
+    }
+
     public function test_customer_can_submit_a_review_from_an_enabled_landing_page(): void
     {
         $account = Account::create(['name' => 'Acme', 'slug' => 'acme-public-reviews']);
