@@ -6,10 +6,10 @@ use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Reviews\ReviewResource;
 use App\Models\Customer;
 use App\Support\BankTransferMessage;
+use App\Support\OrderDeletionService;
 use App\Support\OrderMessageTemplate;
 use App\Support\WhatsAppUrl;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\URL;
@@ -134,7 +134,19 @@ class EditOrder extends EditRecord
                 ->label('عرض الفاتورة')
                 ->icon('heroicon-o-document-text')
                 ->url(fn ($record): string => URL::temporarySignedRoute('orders.invoice', now()->addDays(7), ['order' => $record->id]), true),
-            DeleteAction::make(),
+            Action::make('delete_test_order')
+                ->label('حذف طلب تجريبي')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->modalHeading('حذف الطلب التجريبي نهائيًا')
+                ->modalDescription('سيُحذف الطلب وسجل نشاطه ومرفقاته نهائيًا، وستُعاد كميته إلى المخزون إذا سبق خصمها. استخدم هذا الخيار للطلبات التجريبية فقط.')
+                ->modalSubmitActionLabel('نعم، حذف نهائي')
+                ->requiresConfirmation()
+                ->action(function ($record): void {
+                    app(OrderDeletionService::class)->delete($record);
+                    $this->redirect(OrderResource::getUrl('index'));
+                })
+                ->successNotificationTitle('تم حذف الطلب التجريبي'),
         ];
     }
 }

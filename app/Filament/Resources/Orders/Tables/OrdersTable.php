@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Support\OrderDeletionService;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Forms\Components\DatePicker;
@@ -80,10 +82,32 @@ class OrdersTable
                     ->action(fn ($record) => $record->update(['follow_up_completed_at' => now()]))
                     ->visible(fn ($record): bool => $record->hasPendingFollowUp()),
                 EditAction::make(),
+                Action::make('delete_test_order')
+                    ->label('حذف طلب تجريبي')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->modalHeading('حذف الطلب التجريبي نهائيًا')
+                    ->modalDescription('سيُحذف الطلب وسجل نشاطه ومرفقاته نهائيًا، وستُعاد كميته إلى المخزون إذا سبق خصمها. استخدم هذا الخيار للطلبات التجريبية فقط.')
+                    ->modalSubmitActionLabel('نعم، حذف نهائي')
+                    ->requiresConfirmation()
+                    ->action(fn ($record) => app(OrderDeletionService::class)->delete($record))
+                    ->successNotificationTitle('تم حذف الطلب التجريبي'),
                 Action::make('archive')->label(fn ($record): string => $record->archived_at ? 'إلغاء الأرشفة' : 'أرشفة')->icon('heroicon-o-archive-box')->color(fn ($record): string => $record->archived_at ? 'success' : 'warning')->action(fn ($record) => $record->update(['archived_at' => $record->archived_at ? null : now()])),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([]),
+                BulkActionGroup::make([
+                    BulkAction::make('delete_test_orders')
+                        ->label('حذف الطلبات التجريبية المحددة')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->modalHeading('حذف الطلبات التجريبية المحددة نهائيًا')
+                        ->modalDescription('ستُحذف الطلبات المحددة وسجلاتها ومرفقاتها، وستُعاد أي كميات مخصومة إلى المخزون. لا تستخدم هذا الإجراء للطلبات الحقيقية.')
+                        ->modalSubmitActionLabel('نعم، حذف المحدد نهائيًا')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each(fn ($record) => app(OrderDeletionService::class)->delete($record)))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle('تم حذف الطلبات التجريبية المحددة'),
+                ]),
             ]);
     }
 }
