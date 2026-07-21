@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\OrderInvoiceController;
+use App\Http\Controllers\MarketingPopupEventController;
 use App\Http\Controllers\OrderBatchInvoiceController;
+use App\Http\Controllers\OrderInvoiceController;
 use App\Http\Controllers\PublicLandingPageController;
+use App\Http\Controllers\PublicThankYouPageController;
 use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SiteController;
-use App\Http\Controllers\MarketingPopupEventController;
 use App\LandingPageStatus;
 use App\Models\Account;
 use App\Models\LandingPage;
@@ -63,6 +64,7 @@ Route::post('/marketing-popups/{marketingPopup}/event', MarketingPopupEventContr
     ->name('marketing-popups.event');
 
 Route::get('/l/{slug}', [PublicLandingPageController::class, 'show'])->name('landing-pages.show');
+Route::get('/thank-you/{thankYouPage:slug}', PublicThankYouPageController::class)->name('thank-you-pages.show');
 Route::get('/l/{slug}/viewers', [PublicLandingPageController::class, 'viewers'])->name('landing-pages.viewers');
 Route::post('/l/{slug}/orders', [PublicLandingPageController::class, 'submit'])->name('landing-pages.submit');
 Route::post('/l/{slug}/reviews', [ReviewController::class, 'storeLandingPage'])->middleware('throttle:5,10')->name('landing-pages.reviews.store');

@@ -70,4 +70,9 @@ class Account extends Model
     {
         return $this->hasMany(MarketingPopup::class);
     }
+
+    public function thankYouPages(): HasMany
+    {
+        return $this->hasMany(ThankYouPage::class);
+    }
 }
