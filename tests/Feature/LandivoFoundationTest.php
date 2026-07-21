@@ -121,6 +121,38 @@ final class LandivoFoundationTest extends TestCase
         ]);
     }
 
+    public function test_hidden_social_media_section_is_not_rendered(): void
+    {
+        $account = Account::create(['name' => 'Hidden Social', 'slug' => 'hidden-social']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'hidden-social-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'social_media' => [[
+                    'platform' => 'instagram',
+                    'url' => 'https://instagram.com/hidden-social-test',
+                    'is_active' => true,
+                ]],
+                'section_order' => [[
+                    'type' => 'hero',
+                    'is_visible' => true,
+                ]],
+            ],
+        ]);
+        LandingPageTranslation::create([
+            'landing_page_id' => $page->id,
+            'locale' => 'ar',
+            'title' => 'Hidden Social Offer',
+        ]);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertDontSee('<section class="social-section"', false)
+            ->assertDontSee('hidden-social-test', false);
+    }
+
     public function test_standard_utm_parameters_are_preserved_by_the_form_and_saved_with_the_order(): void
     {
         $account = Account::create(['name' => 'Campaign Account', 'slug' => 'campaign-account']);
