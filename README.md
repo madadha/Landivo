@@ -2,7 +2,9 @@
 
 [العربية](#العربية) · [English](#english)
 
-Landivo is a bilingual Laravel platform for building high-converting landing pages, managing products and orders, and measuring marketing performance from one Filament administration panel.
+منصة احترافية ثنائية اللغة لبناء صفحات الهبوط، إدارة المنتجات والطلبات، أتمتة التواصل، وقياس أداء الحملات التسويقية من لوحة تحكم واحدة.
+
+> الإنتاج: [carakeb.com](https://carakeb.com) · لوحة التحكم: [carakeb.com/admin](https://carakeb.com/admin)
 
 ---
 
@@ -10,43 +12,72 @@ Landivo is a bilingual Laravel platform for building high-converting landing pag
 
 ### نظرة عامة
 
-**Landivo** نظام احترافي ثنائي اللغة لبناء صفحات الهبوط وإدارة المنتجات والعملاء والطلبات والحملات التسويقية. صُمم النظام ليجمع إنشاء الصفحة، استقبال الطلب، متابعة العميل، المخزون، التقييمات، والتحليلات في لوحة تحكم واحدة متجاوبة.
+**Landivo** نظام مبني باستخدام Laravel وFilament لإدارة دورة التسويق والبيع كاملة: من إنشاء صفحة الهبوط والنموذج الديناميكي، مرورًا باستلام الطلب ومتابعته، وصولًا إلى المخزون والفواتير والتقييمات والتقارير.
+
+يدعم النظام العربية والإنجليزية، اتجاهي RTL وLTR، التصميم المتجاوب، تعدد الحسابات، الصلاحيات، والتخصيص من لوحة التحكم دون الاعتماد على نصوص ثابتة داخل الواجهات.
 
 ### الوحدات الرئيسية
 
-- **صفحات الهبوط:** محتوى عربي وإنجليزي، رابط مخصص، حالة النشر، معاينة مباشرة، ترتيب مرن للأقسام وتصميم متجاوب.
-- **منشئ النماذج:** حقول ديناميكية من أنواع النص والبريد والهاتف والرقم والنص الطويل والقائمة والراديو والتحديد والتاريخ والملف والصورة والكمية والعنوان والمدينة والدولة ومتغير المنتج.
-- **الشروط الديناميكية:** إظهار وإخفاء الحقول بناءً على إجابات العميل، مع قواعد تحقق وقيم افتراضية وخيارات مترجمة.
-- **المنتجات:** أسعار وخصومات ومخزون وخيارات ومتغيرات ووسائط متعددة ووصف وتفاصيل بالعربية والإنجليزية.
-- **بطاقات المنتجات:** منتج واحد أو عدة منتجات، شبكة أو سلايدر، مع التحكم بالعنوان والألوان والخطوط والترتيب.
-- **إدارة الطلبات:** بيانات العميل، العرض المختار، مصدر الطلب، UTM، عنوان IP، الجهاز، الملاحظات، الملفات، سجل النشاط، التذكيرات، الفاتورة وروابط واتساب.
-- **حالات الطلبات:** حالات قابلة للتخصيص والترتيب والتلوين والأرشفة، مع حماية السجلات المرتبطة من الحذف غير الآمن.
-- **المخزون:** تتبع كمية المنتج والمتغير، وخصم المخزون عند انتقال الطلب إلى حالة التسليم وفق إعدادات النظام.
-- **التقييمات:** رابط تقييم موقّع يمكن إرساله للعميل، نجوم إلزامية ونص اختياري، مراجعة واعتماد من لوحة التحكم وعرض عام أنيق.
-- **النوافذ التسويقية:** Popups متعددة القوالب والصور، استهداف صفحات وجمهور، جدولة، تكرار ظهور، أولوية، ألوان وسلوك قابل للتخصيص.
-- **التسويق:** أكواد Head وBody، HTML Blocks، شريط إعلاني متحرك، إشعارات شراء، عداد محدودية المخزون وعدد المتصفحين.
-- **SEO:** عنوان ووصف وكلمات مفتاحية وCanonical وOpen Graph وSitemap وGoogle Search Console وGoogle Analytics وأكواد تحقق إضافية.
-- **التقارير:** تحليلات الزوار، تقرير حالات الطلبات، تصدير الطلبات CSV، تقرير التقييمات وسجل التدقيق.
-- **الموقع العام:** صفحة رئيسية، منتجات وتفاصيل المنتج، من نحن، تواصل معنا، سياسة الخصوصية، الأحكام والشروط، قوائم رأس وفوتر ديناميكية.
-- **الإدارة والأمان:** مستخدمون وأدوار وصلاحيات، استعادة كلمة المرور، تحقق ثنائي بالبريد اختياري، شعار وفافيكون وصورة مستخدم.
-- **مكتبة الوسائط:** رفع الصور والملفات، تصنيفها والبحث عنها ومعرفة استخدامها ونسخ مسارها وتنظيف الملفات غير المستخدمة بأمان.
+- **صفحات الهبوط:** محتوى متعدد اللغات، روابط مخصصة، نشر ومعاينة، أقسام قابلة للترتيب، صور وفيديو وسلايدر وأكورديون وHTML مخصص.
+- **منشئ النماذج:** حقول ديناميكية، خيارات مترجمة، تحقق، ملفات وصور، عروض ومنتجات، وحقول شرطية.
+- **المنتجات والمخزون:** أسعار وخصومات، وصف وتفاصيل، صور متعددة، خيارات ومتغيرات، مخزون وحسم آمن عند التسليم.
+- **الطلبات والعملاء:** بيانات العميل والعرض المختار، UTM والمصدر، الملاحظات، التذكيرات، الملفات، سجل النشاط، الفواتير وإجراءات واتساب.
+- **حالات الطلبات:** حالات ملونة ومرتبة وقابلة للأرشفة، مع حماية السجلات المرتبطة من الحذف غير الآمن.
+- **صفحات الشكر المستقلة:** إنشاء عدد غير محدود من صفحات ما بعد التحويل مع رابط مستقل لكل صفحة.
+- **التقييمات:** روابط موقعة ومؤقتة، نجوم إلزامية، تعليق اختياري، مراجعة واعتماد وعرض عام.
+- **التسويق:** نوافذ تسويقية، شريط إعلانات، إشعارات شراء، عدادات ندرة وزوار، ومفاتيح تتبع الحملات.
+- **التقارير:** تحليلات الزوار، حالات الطلبات، تصدير CSV، تقارير التقييمات وسجل التدقيق.
+- **الموقع العام:** الرئيسية، المنتجات وتفاصيل المنتج، من نحن، الاتصال، الخصوصية، الأحكام والشروط، وقوائم ديناميكية.
+- **الإدارة والأمان:** مستخدمون وأدوار وصلاحيات، استعادة كلمة المرور، تحقق اختياري عند الدخول، وهوية بصرية وإعدادات شركة.
+- **مكتبة الوسائط:** رفع وتنظيم وبحث، نسخ الرابط العام، معرفة الاستخدام، وتحديد الملفات غير المستخدمة بأمان.
 
-### التقنيات
+### آخر تحديث: صفحات الشكر المستقلة
 
-- Laravel 12 / PHP 8.2+
-- Filament 5
-- Livewire
-- MySQL في الإنتاج، مع دعم قواعد البيانات التي يدعمها Laravel
-- Vite وTailwind CSS
-- تخزين Laravel Public Disk
+أضيف نظام مستقل بالكامل لصفحات الشكر، دون تعديل إعدادات صفحة الشكر القديمة الموجودة داخل صفحة الهبوط ودون ربط تلقائي بينهما.
 
-### متطلبات التشغيل
+#### الإمكانات
 
-- PHP 8.2 أو أحدث مع إضافات Laravel المعتادة
+- إنشاء عدد غير محدود من صفحات الشكر.
+- رابط مستقل وقابل للنسخ بصيغة: `/thank-you/{slug}`.
+- محتوى عربي وإنجليزي مع اتجاه صحيح لكل لغة.
+- عنوان، وصف، نص زر، صور مستقلة لكل لغة، وشعار الصفحة.
+- قوالب وتصاميم متعددة مع تحكم بالألوان والخلفية والمحاذاة.
+- عداد زمني اختياري وتحويل تلقائي إلى رابط خارجي.
+- رابط زر قابل للتخصيص مع اختيار طريقة الفتح.
+- مفاتيح تتبع حملات من نوع **المفتاح والقيمة والشرح**.
+- أكواد `Head` و`Body` مستقلة للبيكسلات وأدوات القياس.
+- حالة نشر وتفعيل، معاينة مباشرة، ونسخ للرابط من لوحة التحكم.
+- يمكن استخدام رابط صفحة الشكر يدويًا داخل أي HTML Block أو تدفق تسويقي.
+
+#### الروابط
+
+```text
+لوحة الإدارة: /admin/thank-you-pages
+الصفحة العامة: /thank-you/{slug}
+```
+
+#### ملاحظات الترقية
+
+```bash
+php artisan migrate --force
+php artisan optimize:clear
+```
+
+Migration المضافة:
+
+```text
+2026_07_21_230000_create_thank_you_pages_table
+```
+
+### التقنيات والمتطلبات
+
+- PHP 8.2+
+- Laravel 12
+- Filament 5 وLivewire
 - Composer 2
-- Node.js وnpm
-- MySQL أو MariaDB أو SQLite للتطوير
-- خادم ويب Nginx أو Apache
+- MySQL أو MariaDB للإنتاج
+- Node.js وnpm وVite وTailwind CSS
+- Nginx أو Apache
 
 ### التثبيت المحلي
 
@@ -63,20 +94,18 @@ php artisan storage:link
 php artisan serve
 ```
 
-روابط التطوير الافتراضية:
+الروابط الافتراضية:
 
 - الموقع: `http://127.0.0.1:8000`
 - لوحة التحكم: `http://127.0.0.1:8000/admin`
-
-مع Laragon يوضع المشروع في `C:\laragon\www\Landivo` ويمكن استخدام `http://landivo.test:8000`.
+- مع Laragon: `http://landivo.test:8000`
 
 ### إعداد البيئة
-
-انسخ `.env.example` إلى `.env` واضبط القيم التالية دون رفع الملف إلى GitHub:
 
 ```env
 APP_NAME=Landivo
 APP_ENV=local
+APP_DEBUG=true
 APP_URL=http://landivo.test:8000
 
 DB_CONNECTION=mysql
@@ -89,27 +118,7 @@ DB_PASSWORD=
 FILESYSTEM_DISK=public
 ```
 
-للتنبيهات واستعادة كلمة المرور اضبط SMTP في `.env`. لا تُسجّل كلمات المرور أو مفاتيح SSH أو بيانات SMTP داخل المستودع.
-
-### مهام ما بعد التثبيت
-
-```bash
-php artisan migrate --force
-php artisan storage:link
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
-بعد الدخول إلى لوحة التحكم:
-
-1. اضبط هوية الشركة واللغات وSEO من **إعدادات النظام**.
-2. أنشئ حالات الطلبات المناسبة لمسار العمل.
-3. أضف المنتجات ووسائطها وخياراتها ومتغيراتها ومخزونها.
-4. أنشئ صفحة هبوط، واربط المنتج، وابنِ النموذج ورتّب الأقسام.
-5. أضف بريد التنبيهات وقوالب واتساب وصفحة ما بعد الطلب.
-6. اختبر طلبًا كاملًا قبل نشر الإعلان.
+لا ترفع ملف `.env` أو كلمات المرور أو مفاتيح SSH أو بيانات SMTP إلى GitHub.
 
 ### الاختبارات والجودة
 
@@ -120,206 +129,83 @@ php artisan view:cache
 composer audit
 ```
 
-يجب تشغيل الاختبارات قبل كل رفع. لا تعدّل بيانات الإنتاج أو تنفذ Seeder على الإنتاج إلا بعد مراجعة أثره.
+نتيجة الاختبارات عند إصدار صفحات الشكر المستقلة:
+
+```text
+54 tests passed
+214 assertions
+```
+
+### بنية المشروع
+
+```text
+app/Filament/Resources/        موارد ونماذج وجداول لوحة التحكم
+app/Http/Controllers/          منطق صفحات الموقع والاستقبال
+app/Models/                    نماذج قاعدة البيانات والعلاقات
+app/Services/                  خدمات الأعمال والتكاملات
+database/migrations/           تغييرات بنية قاعدة البيانات
+resources/views/               واجهات الموقع ولوحة التحكم
+resources/css/                 التصميم العام وتخصيص Filament
+routes/                        مسارات الموقع والتقارير
+storage/app/public/            الصور والملفات العامة
+tests/                         اختبارات النظام
+```
 
 ### الاستضافة الحالية
 
-- **مزود الاستضافة:** SiteGround
-- **النطاق الإنتاجي:** `https://carakeb.com`
-- **خادم الويب:** Nginx عبر SiteGround
-- **قاعدة البيانات:** MySQL
-- **مجلد التطبيق:** `~/www/carakeb.com/landivo`
-- **المجلد العام:** `~/www/carakeb.com/public_html`
-- **رابط الوسائط:** `public_html/storage` مرتبط بـ `../landivo/storage/app/public`
-
-يحفظ ملف `.env` ومجلد `storage` على الخادم ولا يُستبدلان أثناء النشر. لا يحتوي هذا المستند على أي بيانات دخول أو أسرار إنتاجية.
-
-### أسلوب النشر الآمن
-
-1. نفّذ الاختبارات محليًا.
-2. راجع `git diff` ثم أنشئ Commit واضحًا وارفعه إلى `master`.
-3. اسحب التحديث في نسخة النشر على SiteGround.
-4. انقل الملفات المتغيرة إلى مجلد التطبيق النشط دون استبدال `.env` أو `storage`.
-5. نفّذ `composer install --no-dev --optimize-autoloader` عند تغير الاعتمادات.
-6. نفّذ migrations باستخدام `--force` عند وجودها.
-7. امسح الكاش ثم أنشئ config وroute وview cache.
-8. تحقق من الصفحة العامة ولوحة التحكم والوسائط بعد النشر.
-
-### هيكل مهم
-
-```text
-app/Filament/                 لوحة التحكم والموارد والصفحات والتقارير
-app/Models/                   نماذج البيانات والعلاقات
-app/Http/Controllers/         منطق الموقع العام والطلبات والتقارير
-app/Services/                 خدمات الوسائط والنوافذ والتكاملات
-resources/views/              واجهات الموقع ولوحة التحكم
-resources/css/                التصميم العام وتصميم Filament
-database/migrations/          بنية قاعدة البيانات
-database/seeders/             بيانات التطوير والتهيئة الاختيارية
-routes/                       مسارات الويب والتقارير
-storage/app/public/           الصور والملفات المرفوعة
-tests/                        اختبارات النظام
-```
-
-### النسخ الاحتياطي والأمان
-
-- احتفظ بنسخة دورية من قاعدة البيانات و`storage/app/public` و`.env`.
-- لا تحذف حالة طلب أو منتجًا مرتبطًا؛ استخدم الأرشفة.
-- لا ترفع المفاتيح الخاصة أو كلمات المرور أو ملفات `.env`.
-- راجع صلاحيات المستخدمين وسجل التدقيق دوريًا.
-- استخدم HTTPS وتحقق البريد الثنائي للحسابات الإدارية الحساسة.
-
-### خريطة لوحة التحكم
-
-| الوحدة | الغرض التشغيلي |
-|---|---|
-| لوحة التحكم | مؤشرات الطلبات والإيراد والتحويل، أحدث الطلبات، الصفحات الأعلى أداءً وإجراءات سريعة |
-| العملاء والطلبات المحتملة | ملف موحّد للعميل وسجل طلباته وبيانات التواصل |
-| معرض صفحات الهبوط | عرض الصفحات كبطاقات مع الزيارات والطلبات والتحويل والإيراد وروابط الإدارة والمعاينة |
-| صفحات الهبوط | بناء المحتوى والنموذج والأقسام والتصميم والتتبع وصفحة ما بعد الطلب |
-| حالات الطلبات | تصميم دورة العمل وتحديد حالة التسليم وحماية الحالات المرتبطة |
-| الطلبات | المتابعة، التذكير، النشاط، المرفقات، الفاتورة، واتساب، المصدر وUTM |
-| المنتجات | الأسعار والمخزون والوسائط والمتغيرات والخيارات والمحتوى متعدد اللغات |
-| تقييمات الزوار | إدارة التقييمات واعتمادها وإرسال روابط التقييم الموقعة |
-| مكتبة الوسائط | إدارة التخزين، معرفة الاستخدام ونسخ الرابط العام بأمان |
-| بحث العملاء | بحث فوري بجزء من الاسم أو الهاتف أو البريد مع عرض الطلبات والبيانات |
-| التقارير | تحليلات الزوار، حالات الطلبات، التصدير، التقييمات وسجل التدقيق |
-| إعدادات النظام | الهوية، اللغات، بيانات الشركة، البريد، SEO، القوائم والأمان |
-
-### رحلة البيانات في النظام
-
-1. يصل الزائر إلى صفحة عامة أو صفحة هبوط، ويُسجّل النظام الزيارة ومصدر الحملة ومعلمات UTM.
-2. تُعرض اللغة والمحتوى والوسائط والأقسام والنموذج حسب إعدادات الصفحة.
-3. عند الإرسال، يتحقق Laravel من الحقول والشروط ثم ينشئ أو يحدّث العميل والطلب وعناصره.
-4. يحتفظ الطلب بنسخة من بيانات النموذج، المصدر، الحملة، الجهاز وIP لتبقى القراءة التاريخية دقيقة.
-5. يسجل النظام النشاط والتعديلات والتذكيرات ويربطها بالمستخدم الذي نفذ الإجراء.
-6. عند انتقال الطلب إلى حالة تسليم مهيأة، تُزامن كميات المنتج أو المتغير بطريقة آمنة.
-7. تُجمّع الزيارات والطلبات والإيرادات في لوحات التحليل والتقارير دون خلط بيانات الحسابات.
-
-### حدود الحسابات والصلاحيات
-
-- كل سجل تشغيلي مرتبط بـ `account_id`، وتُقيّد استعلامات لوحة التحكم بالحساب الحالي.
-- الأدوار تحدد الوصول إلى المنتجات والطلبات والعملاء والتقارير والإعدادات.
-- لا يكفي إخفاء عنصر من القائمة؛ يجب أن تبقى الصلاحية مطبقة على المورد أو الصفحة والخادم.
-- روابط التقييم الخاصة بالطلبات موقعة ومؤقتة، ولا تعرض بيانات العميل الحساسة.
-- يستخدم سجل التدقيق لمراجعة الإنشاء والتعديل والحذف مع حجب القيم الحساسة.
-
-### أهم جداول قاعدة البيانات
-
-```text
-accounts              الحسابات وإعداداتها
-users                 مستخدمو لوحة التحكم
-products              المنتج والسعر والمخزون والحالة
-product_translations  الاسم والوصف والتفاصيل لكل لغة
-product_variants      المتغيرات والأسعار والكميات
-product_media         صور ووسائط المنتج حسب اللغة
-landing_pages         هوية صفحة الهبوط وحالتها وإعداداتها
-landing_page_*        الترجمات والأقسام والحقول ومحتوى الصفحة
-customers             ملف العميل وبيانات التواصل
-orders                الطلب والمصدر والحملة والحالة والقيمة
-order_items           المنتجات والمتغيرات والكميات داخل الطلب
-order_activities      سجل النشاط والمتابعة
-order_attachments     الصور والملفات المرتبطة بالطلب
-order_statuses        دورة العمل القابلة للتخصيص
-visitor_events        الزيارات والأحداث التحليلية
-reviews               التقييمات ومصدرها وحالة اعتمادها
-media_assets          فهرس مكتبة الوسائط واستخدام الملفات
-audit_logs            سجل التدقيق الإداري
-```
-
-### إعداد الإنتاج على SiteGround
-
-الإعداد الحالي يستخدم فصلًا واضحًا بين كود التطبيق والجذر العام:
+النسخة الإنتاجية مستضافة على **SiteGround** باستخدام Nginx وMySQL وHTTPS.
 
 ```text
 Domain:          https://carakeb.com
 Admin:           https://carakeb.com/admin
 Application:     ~/www/carakeb.com/landivo
 Document root:   ~/www/carakeb.com/public_html
-Upload staging:  ~/www/carakeb.com/upload
 Public storage:  public_html/storage -> ../landivo/storage/app/public
-PHP:             8.2 أو أحدث
-Database:        MySQL / MariaDB
-Web server:      Nginx managed by SiteGround
-TLS:             SiteGround SSL مع تحويل HTTPS
 ```
 
-يجب أن يشير `public_html/index.php` إلى ملفات التطبيق الفعلية:
+يجب أن يشير `public_html/index.php` إلى التطبيق الفعلي:
 
 ```php
 require __DIR__.'/../landivo/vendor/autoload.php';
 $app = require_once __DIR__.'/../landivo/bootstrap/app.php';
 ```
 
-نموذج متغيرات الإنتاج، مع وضع القيم السرية في `.env` على الخادم فقط:
+لا يحتوي هذا المستند على بيانات دخول الاستضافة أو قاعدة البيانات. تحفظ الأسرار في `.env` على الخادم فقط.
 
-```env
-APP_NAME=Landivo
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://carakeb.com
+### النشر الآمن
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=CHANGE_ME
-DB_USERNAME=CHANGE_ME
-DB_PASSWORD=CHANGE_ME
-
-FILESYSTEM_DISK=public
-SESSION_SECURE_COOKIE=true
-SESSION_SAME_SITE=lax
-
-MAIL_MAILER=smtp
-MAIL_HOST=CHANGE_ME
-MAIL_PORT=465
-MAIL_ENCRYPTION=ssl
-MAIL_USERNAME=CHANGE_ME
-MAIL_PASSWORD=CHANGE_ME
-MAIL_FROM_ADDRESS=CHANGE_ME
-```
-
-لا تُكتب القيم الحقيقية أو بيانات SSH داخل README أو Git. تُدار من SiteGround Site Tools وملف `.env` المحمي.
-
-### إجراء نشر Production موصى به
+1. خذ نسخة احتياطية من قاعدة البيانات و`.env` و`storage/app/public`.
+2. شغّل الاختبارات محليًا.
+3. راجع التغييرات وارفع Commit واضحًا إلى GitHub.
+4. انقل ملفات الإصدار المختبرة إلى مجلد التطبيق مع الحفاظ على `.env` و`storage`.
+5. نفّذ أوامر النشر التالية داخل مجلد التطبيق:
 
 ```bash
-# داخل مجلد التطبيق بعد وصول الملفات المختبرة
 composer install --no-dev --optimize-autoloader --no-interaction
 php artisan migrate --force
 php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+```
 
-# عند تغيّر CSS أو JavaScript، يُبنى محليًا ثم تُنشر public/build
+6. عند تغير CSS أو JavaScript:
+
+```bash
 npm ci
 npm run build
 ```
 
-قائمة التحقق بعد النشر:
+7. افحص الموقع، تسجيل دخول الإدارة، الصور، نموذج الطلب، UTM، البريد، واتساب، والتقارير.
 
-- الصفحة العامة وملفات CSS وJavaScript ترجع `200`.
-- `/admin` يحول إلى تسجيل الدخول عند عدم وجود جلسة، ويفتح للمستخدم المصرح.
-- الصور الجديدة والقديمة تعمل عبر `/storage`.
-- إنشاء طلب تجريبي يحفظ العميل والعرض والمصدر وUTM.
-- البريد واستعادة كلمة المرور وروابط واتساب تعمل بالإعدادات الإنتاجية.
-- لا يوجد `APP_DEBUG=true` ولا أسرار في Git أو السجلات العامة.
+### النسخ الاحتياطي والأمان
 
-### النسخ الاحتياطي والاستعادة
-
-- نسخة يومية من MySQL و`storage/app/public` ونسخة مشفرة من `.env`.
-- قبل migration كبير، تؤخذ نسخة يدوية مع اختبار إمكانية استعادتها.
-- الاستعادة تبدأ بقاعدة البيانات ثم `storage` ثم نفس نسخة الكود و`APP_KEY` الأصلي.
-- العودة عن إصدار تتم بنشر Commit سابق؛ لا تستخدم `migrate:rollback` في الإنتاج دون مراجعة أثر البيانات.
-
-### المراقبة والصيانة
-
-- راقب سجل Laravel في `storage/logs/laravel.log` ومساحة التخزين وحجم قاعدة البيانات.
-- شغّل Laravel Scheduler كل دقيقة من Cron عند تفعيل مهام مجدولة: `php artisan schedule:run`.
-- نظّف الملفات غير المستخدمة من واجهة الوسائط بعد التأكد من تقرير الاستخدام، وليس بحذف مباشر من الخادم.
-- راجع التذكيرات المستحقة والطلبات الجديدة وسجل التدقيق وصلاحيات المستخدمين دوريًا.
-- بعد تحديث PHP أو Composer، شغّل الاختبارات وتحقق من توافق Filament والحزم قبل الإنتاج.
+- احتفظ بنسخة يومية من قاعدة البيانات وملفات الوسائط.
+- استخدم الأرشفة بدل حذف السجلات المرتبطة.
+- لا تستخدم أوامر rollback مدمرة في الإنتاج دون مراجعة أثر البيانات.
+- راجع سجل التدقيق والصلاحيات والحسابات الإدارية دوريًا.
+- فعّل HTTPS والتحقق الإضافي للحسابات الحساسة.
+- راقب `storage/logs/laravel.log` ومساحة التخزين والمهام المجدولة.
 
 ---
 
@@ -327,38 +213,66 @@ npm run build
 
 ### Overview
 
-**Landivo** is a bilingual commerce and marketing platform for creating landing pages, capturing leads and orders, managing products and inventory, communicating with customers, and analysing campaign performance from a single responsive Filament admin panel.
+**Landivo** is a bilingual Laravel and Filament platform that manages the full marketing and sales lifecycle: landing-page creation, dynamic forms, lead and order capture, CRM follow-up, inventory, invoices, reviews, and campaign analytics.
 
-### Core modules
+It supports Arabic and English, RTL/LTR layouts, responsive interfaces, account isolation, role-based permissions, and admin-managed content without hard-coded public-page content.
 
-- **Landing pages:** Arabic and English content, custom slugs, publishing workflow, live preview, responsive layouts, and sortable sections.
-- **Dynamic Form Builder:** text, email, phone, number, textarea, select, radio, checkbox, date, file, image, quantity, address, city, country, and product-variant fields.
-- **Conditional fields:** translated labels and placeholders, validation rules, defaults, options, and conditional visibility.
-- **Products:** multilingual names, descriptions and details, pricing, discounts, stock, options, variants, and multiple media files.
-- **Product showcases:** single or multiple products displayed as grids or sliders with configurable styling and position.
-- **Orders and CRM:** customer details, selected offer, source and UTM tracking, IP and device information, notes, attachments, activities, reminders, invoices, and WhatsApp actions.
-- **Order statuses:** sortable, colour-coded and archivable workflow states with safe relationship protection.
-- **Inventory:** product and variant quantities with status-driven stock deduction.
-- **Reviews:** signed customer review links, required rating, optional comment, moderation, reporting, and public display.
-- **Marketing popups:** multiple templates, desktop/mobile images, page and audience targeting, schedules, frequency, priority, colours, and behaviour settings.
-- **Marketing components:** Head and Body code, reusable HTML blocks, ticker bars, purchase notifications, scarcity and live-viewer counters.
-- **SEO:** titles, descriptions, keywords, canonical URLs, Open Graph, sitemap, Search Console, Analytics, and custom verification code.
-- **Reports:** visitor analytics, order-status performance, CSV order export, review reporting, and audit logs.
-- **Public website:** homepage, product catalogue and details, About, Contact, Privacy Policy, Terms, and dynamic header/footer menus.
-- **Administration and security:** users, roles, permissions, password reset, optional email MFA, company branding, favicon, and profile avatars.
-- **Media library:** upload, classify, search, track usage, copy public paths, and safely identify unused files.
+### Main modules
 
-### Stack and requirements
+- Multilingual landing-page builder with sortable sections and reusable HTML blocks.
+- Dynamic and conditional form builder with translated fields and options.
+- Product catalogue, media, pricing, variants, options, and inventory.
+- Orders, customers, attribution, reminders, files, invoices, and WhatsApp actions.
+- Colour-coded order workflows with archival and relationship protection.
+- Independent and reusable thank-you pages.
+- Signed customer reviews and moderation.
+- Marketing popups, announcement tickers, scarcity, and social proof.
+- Visitor, order-status, review, export, and audit reports.
+- Dynamic public website, navigation, footer, SEO, and company settings.
+- Users, roles, permissions, password recovery, and optional login verification.
+- Searchable media library with usage tracking.
+
+### Latest update: Independent Thank-You Pages
+
+This release introduces a standalone thank-you page system. It does not modify or replace the legacy thank-you settings embedded in landing pages, and pages are not linked automatically.
+
+Features include:
+
+- Unlimited thank-you pages.
+- Copyable public URLs using `/thank-you/{slug}`.
+- Arabic and English content and images.
+- Templates, colours, typography, alignment, and background controls.
+- Optional countdown and timed external redirect.
+- Configurable CTA link and target.
+- Campaign tracking key/value/comment entries.
+- Independent Head and Body code for analytics and pixels.
+- Publish state, admin preview, and direct URL actions.
+- Manual use inside HTML blocks or any marketing flow.
+
+Admin resource:
+
+```text
+/admin/thank-you-pages
+```
+
+Upgrade commands:
+
+```bash
+php artisan migrate --force
+php artisan optimize:clear
+```
+
+### Requirements
 
 - PHP 8.2+
 - Laravel 12
 - Filament 5 and Livewire
 - Composer 2
+- MySQL/MariaDB
 - Node.js, npm, Vite, and Tailwind CSS
-- MySQL/MariaDB for production; SQLite is suitable for local development
 - Nginx or Apache
 
-### Local setup
+### Local installation
 
 ```bash
 git clone git@github.com:madadha/Landivo.git
@@ -373,101 +287,31 @@ php artisan storage:link
 php artisan serve
 ```
 
-Default URLs:
-
-- Public site: `http://127.0.0.1:8000`
-- Admin panel: `http://127.0.0.1:8000/admin`
-
-### Production hosting
-
-The current production installation is hosted on **SiteGround** at `https://carakeb.com`, using Nginx and MySQL.
-
-```text
-Application: ~/www/carakeb.com/landivo
-Web root:    ~/www/carakeb.com/public_html
-Media link:  public_html/storage -> ../landivo/storage/app/public
-```
-
-Production credentials, SSH keys, SMTP passwords, and the `.env` file must never be committed. The active `.env` and `storage` directory must be preserved during deployment.
-
-### Safe deployment checklist
-
-1. Run the test suite locally.
-2. Review and commit only intended changes.
-3. Push the tested commit to `master`.
-4. Pull it into the SiteGround deployment copy.
-5. Update the active application while preserving `.env` and `storage`.
-6. Run Composer only when dependencies changed.
-7. Run migrations with `--force` when required.
-8. Rebuild Laravel caches.
-9. Verify the public site, admin panel, uploads, and critical order flow.
-
-### Maintenance commands
+### Quality checks
 
 ```bash
-php artisan optimize:clear
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
 php artisan test
+php artisan route:list
+php artisan view:cache
 composer audit
 ```
 
-### Security and backups
+The independent thank-you page release passed **54 tests with 214 assertions**.
 
-- Back up the database, `.env`, and `storage/app/public` regularly.
-- Archive linked records instead of deleting them.
-- Keep secrets out of Git and documentation.
-- Review permissions and the audit log regularly.
-- Enforce HTTPS and enable email MFA for privileged users.
-
-### Administration map
-
-| Area | Operational purpose |
-|---|---|
-| Dashboard | Orders, revenue, conversion, recent activity, top pages, and quick actions |
-| Landing Page Gallery | Visual cards with page status, visits, orders, conversion, revenue, edit and preview links |
-| Landing Pages | Content, form, sections, styling, tracking, and post-submission experience |
-| Products | Multilingual catalogue, pricing, inventory, media, options, and variants |
-| Orders | CRM workflow, reminders, activity, files, invoices, WhatsApp, attribution, and UTM |
-| Customer Search | Instant partial search by name, phone, or email with full customer and order context |
-| Reports | Visitor analytics, status performance, order export, reviews, and audit history |
-| System Settings | Branding, company details, locales, mail, SEO, menus, and security |
-
-### Request and data flow
-
-1. A visit records the landing page, campaign source, UTM values, session, and device context.
-2. The page resolves its locale, product, translated assets, ordered sections, and dynamic form.
-3. A valid submission creates or updates the customer, then creates the order and line items.
-4. The order preserves submitted form data and attribution for reliable historical reporting.
-5. Staff activity, follow-ups, files, and status transitions are recorded against the order.
-6. Delivery statuses can trigger safe product or variant inventory deduction.
-7. Account-scoped analytics aggregate visits, conversions, orders, and revenue.
-
-### Account isolation and authorization
-
-- Operational records are owned by `account_id`; admin queries are scoped to the signed-in account.
-- Roles and permissions control dashboard and resource access.
-- Server-side authorization remains required even when a navigation item is hidden.
-- Order review URLs are temporary and signed.
-- Audit logging records administrative changes while masking sensitive values.
-
-### Current SiteGround topology
+### Production topology
 
 ```text
 Domain:          https://carakeb.com
 Admin:           https://carakeb.com/admin
 Application:     ~/www/carakeb.com/landivo
 Document root:   ~/www/carakeb.com/public_html
-Upload staging:  ~/www/carakeb.com/upload
 Public storage:  public_html/storage -> ../landivo/storage/app/public
 Runtime:         PHP 8.2+, MySQL/MariaDB, managed Nginx and HTTPS
 ```
 
-The public `index.php` must load `../landivo/vendor/autoload.php` and `../landivo/bootstrap/app.php`. Production secrets belong only in the server-side `.env`; never commit database credentials, mail passwords, private keys, or SiteGround credentials.
+Never commit `.env`, database credentials, SMTP passwords, SSH keys, private keys, or hosting credentials. Preserve the production `.env`, `APP_KEY`, and `storage` directory during every deployment.
 
-### Production deployment runbook
+### Production deployment
 
 ```bash
 composer install --no-dev --optimize-autoloader --no-interaction
@@ -478,19 +322,16 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-When front-end assets change, run `npm ci && npm run build` in a trusted build environment and deploy the resulting `public/build` directory. Preserve the production `.env`, `storage`, and original `APP_KEY`.
+Rebuild front-end assets with `npm ci && npm run build` when CSS or JavaScript changes. Verify the public website, admin authentication, compiled assets, storage link, order flow, UTM attribution, mail, WhatsApp actions, and reports after deployment.
 
-Post-deployment verification must cover the public site, admin authentication, compiled assets, the storage symlink, a test order with UTM attribution, outbound mail, password reset, and critical WhatsApp links.
+### Security and recovery
 
-### Recovery and operations
+- Back up MySQL, `.env`, and `storage/app/public` regularly.
+- Archive linked records instead of deleting them.
+- Restore the database, media, matching code revision, and original `APP_KEY` together.
+- Deploy a known-good commit for rollback; avoid destructive production database rollbacks.
+- Review permissions, audit logs, new orders, due reminders, disk usage, and Laravel logs.
 
-- Back up MySQL, `storage/app/public`, and an encrypted copy of `.env` every day.
-- Take an additional backup before high-risk migrations and verify restore procedures.
-- Restore the database, storage, the matching code revision, and the original `APP_KEY` together.
-- Roll back by deploying a known-good commit; do not run destructive database rollback commands without a data-impact review.
-- Monitor Laravel logs, disk usage, database growth, due follow-ups, new orders, audit events, and privileged roles.
-- Configure the scheduler through SiteGround Cron when scheduled jobs are enabled: `php artisan schedule:run` every minute.
+## License
 
-## Licence
-
-Landivo is maintained as a private commercial project. Define final commercial licensing terms before public distribution.
+Landivo is maintained as a private commercial project. Final commercial licensing terms must be defined before public distribution.
