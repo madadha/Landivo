@@ -186,6 +186,54 @@ final class LandivoFoundationTest extends TestCase
             ->assertSee('social-shape-test', false);
     }
 
+    public function test_saved_section_order_controls_gallery_social_and_unlisted_sections(): void
+    {
+        $account = Account::create(['name' => 'Ordered Sections', 'slug' => 'ordered-sections']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'ordered-sections-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'show_order_form' => true,
+                'gallery_images_ar' => ['landing-pages/gallery/example.jpg'],
+                'social_media' => [[
+                    'platform' => 'instagram',
+                    'url' => 'https://instagram.com/ordered-sections-test',
+                    'is_active' => true,
+                ]],
+                'accordion_enabled' => true,
+                'accordion_items' => [[
+                    'title_ar' => 'Unlisted accordion',
+                    'content_ar' => 'This section must stay hidden.',
+                    'is_active' => true,
+                ]],
+                'footer_enabled' => true,
+                'footer_html_ar' => 'Ordered footer',
+                'section_order' => [
+                    ['type' => 'hero', 'is_visible' => true],
+                    ['type' => 'order_form', 'is_visible' => true],
+                    ['type' => 'product_gallery', 'is_visible' => true],
+                    ['type' => 'social_media', 'is_visible' => true],
+                    ['type' => 'footer', 'is_visible' => true],
+                ],
+            ],
+        ]);
+        LandingPageTranslation::create([
+            'landing_page_id' => $page->id,
+            'locale' => 'ar',
+            'title' => 'Ordered Sections Offer',
+        ]);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('id="order-form"', false)
+            ->assertSee('gallery-section" style="order:2', false)
+            ->assertSee('social-section" style="order:3', false)
+            ->assertSee('Ordered footer')
+            ->assertDontSee('<section class="section accordion-section', false);
+    }
+
     public function test_standard_utm_parameters_are_preserved_by_the_form_and_saved_with_the_order(): void
     {
         $account = Account::create(['name' => 'Campaign Account', 'slug' => 'campaign-account']);
