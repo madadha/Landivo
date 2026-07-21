@@ -325,6 +325,28 @@ final class LandivoFoundationTest extends TestCase
             ->assertSee('Free delivery on selected orders');
     }
 
+    public function test_verification_badge_can_render_centered_above_the_title(): void
+    {
+        $account = Account::create(['name' => 'Badge Account', 'slug' => 'badge-account']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'centered-badge',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'title_badge_enabled' => true,
+                'title_badge_text_ar' => 'منتج مفحوص وموثق',
+                'title_badge_placement' => 'above',
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'عنوان العرض']);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('badge-placement-above', false)
+            ->assertSee('منتج مفحوص وموثق');
+    }
+
     public function test_order_follow_up_becomes_due_and_all_changes_are_logged(): void
     {
         $this->travelTo('2026-07-20 09:00:00');

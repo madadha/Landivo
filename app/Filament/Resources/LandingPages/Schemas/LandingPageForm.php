@@ -195,6 +195,7 @@ class LandingPageForm
                                                 ->options([
                                                     'start' => 'بداية العنوان تلقائيًا / Auto start',
                                                     'end' => 'نهاية العنوان تلقائيًا / Auto end',
+                                                    'above' => 'فوق العنوان بالمنتصف / Above title centered',
                                                 ])->default('start'),
                                             Select::make('settings.title_badge_font_family')
                                                 ->label('الخط / Font')

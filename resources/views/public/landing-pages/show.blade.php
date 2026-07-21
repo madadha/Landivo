@@ -88,7 +88,7 @@
     @php($titleBadgeText = filled($titleBadgeText) ? $titleBadgeText : (app()->getLocale() === 'ar' ? 'منتج موثوق' : 'Verified Product'))
     @php($titleBadgeIcon = in_array(data_get($landingPage->settings, 'title_badge_icon'), ['facebook', 'instagram', 'whatsapp', 'shield', 'seal'], true) ? data_get($landingPage->settings, 'title_badge_icon') : 'facebook')
     @php($titleBadgeStyle = in_array(data_get($landingPage->settings, 'title_badge_style'), ['icon_only', 'icon', 'pill', 'soft', 'outline'], true) ? data_get($landingPage->settings, 'title_badge_style') : 'icon')
-    @php($titleBadgePlacement = data_get($landingPage->settings, 'title_badge_placement') === 'end' ? 'end' : 'start')
+    @php($titleBadgePlacement = in_array(data_get($landingPage->settings, 'title_badge_placement'), ['start', 'end', 'above'], true) ? data_get($landingPage->settings, 'title_badge_placement') : 'start')
     @php($titleBadgeColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) data_get($landingPage->settings, 'title_badge_color')) ? data_get($landingPage->settings, 'title_badge_color') : '#1877F2')
     @php($titleBadgeCheckColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) data_get($landingPage->settings, 'title_badge_check_color')) ? data_get($landingPage->settings, 'title_badge_check_color') : '#FFFFFF')
     @php($titleBadgeTextColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) data_get($landingPage->settings, 'title_badge_text_color')) ? data_get($landingPage->settings, 'title_badge_text_color') : '#172033')
