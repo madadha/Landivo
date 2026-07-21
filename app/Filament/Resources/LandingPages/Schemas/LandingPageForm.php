@@ -727,12 +727,15 @@ class LandingPageForm
                                         ])->visible(fn (Get $get): bool => (bool) $get('settings.store_ticker.enabled')),
                                         Repeater::make('settings.store_ticker.items')
                                             ->label('محتوى الشريط / Ticker items')
+                                            ->helperText('اكتب أخبار الشريط هنا أولًا، ثم فعّل ظهوره عندما يصبح جاهزًا. يمكنك إعداد المحتوى حتى لو كان الشريط غير مفعّل. / Compose ticker content here, then enable it when ready.')
                                             ->reorderable()
                                             ->collapsible()
+                                            ->cloneable()
+                                            ->defaultItems(1)
                                             ->itemLabel(fn (array $state): ?string => $state['text_ar'] ?? $state['text_en'] ?? 'خبر جديد')
                                             ->schema([
-                                                TextInput::make('text_ar')->label('النص بالعربية / Arabic text')->required(),
-                                                TextInput::make('text_en')->label('النص بالإنجليزية / English text')->required(),
+                                                Textarea::make('text_ar')->label('النص بالعربية / Arabic text')->placeholder('مثال: توصيل مجاني لجميع الإمارات')->rows(2),
+                                                Textarea::make('text_en')->label('النص بالإنجليزية / English text')->placeholder('Example: Free delivery across the UAE')->rows(2),
                                                 Select::make('icon')->label('الأيقونة / Icon')->options([
                                                     'none' => 'بدون / None',
                                                     'megaphone' => 'إعلان / Megaphone',
@@ -748,7 +751,6 @@ class LandingPageForm
                                                 Toggle::make('open_new_tab')->label('نافذة جديدة / New tab')->default(false),
                                                 Toggle::make('is_active')->label('فعال / Active')->default(true),
                                             ])->columns(3)
-                                            ->visible(fn (Get $get): bool => (bool) $get('settings.store_ticker.enabled'))
                                             ->addActionLabel('إضافة خبر أو إعلان / Add ticker item'),
                                     ]),
                             ]),

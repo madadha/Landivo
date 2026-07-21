@@ -166,15 +166,11 @@ class PublicLandingPageController extends Controller
             ->filter(fn ($field) => filled($field['internal_name'] ?? $field['key'] ?? null) && ! (app()->getLocale() === 'ar' ? str_ends_with((string) ($field['internal_name'] ?? $field['key']), '_en') : str_ends_with((string) ($field['internal_name'] ?? $field['key']), '_ar')))
             ->values();
         $fieldKeys = $formFields->map(fn ($field) => $field['internal_name'] ?? $field['key'])->all();
-        $hasDynamicName = (bool) array_intersect($fieldKeys, ['name', 'full_name_ar', 'full_name_en']);
         $hasDynamicPhone = in_array('phone', $fieldKeys, true);
         $hasDynamicCity = (bool) array_intersect($fieldKeys, ['city', 'emirate']);
         $hasDynamicQuantity = in_array('quantity', $fieldKeys, true);
 
         $rules = [];
-        if (! $hasDynamicName) {
-            $rules['name'] = ['required', 'string', 'max:150'];
-        }
         if (! $hasDynamicPhone) {
             $rules['phone'] = ['required', 'string', 'max:40'];
         }
@@ -230,7 +226,10 @@ class PublicLandingPageController extends Controller
         $trackingValues = collect($request->query())->only($trackingKeys->all())->all();
         $customValues = $validated['custom'] ?? [];
         $customValues['_locale'] = app()->getLocale();
-        $customerName = $validated['name'] ?? $customValues['full_name_ar'] ?? $customValues['full_name_en'] ?? 'Customer';
+        $customerName = $customValues['name']
+            ?? $customValues['full_name_ar']
+            ?? $customValues['full_name_en']
+            ?? (app()->getLocale() === 'ar' ? 'عميل صفحة الهبوط' : 'Landing Page Customer');
         $customerPhone = $validated['phone'] ?? $customValues['phone'] ?? null;
         $customerCity = $validated['city'] ?? $customValues['emirate'] ?? $customValues['city'] ?? null;
         $customerEmail = $customValues['email'] ?? null;

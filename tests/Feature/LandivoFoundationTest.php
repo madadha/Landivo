@@ -79,6 +79,48 @@ final class LandivoFoundationTest extends TestCase
         self::assertDatabaseHas('order_items', ['product_id' => $product->id, 'quantity' => 2]);
     }
 
+    public function test_dynamic_order_form_does_not_inject_an_unconfigured_name_field(): void
+    {
+        $account = Account::create(['name' => 'No Name Form', 'slug' => 'no-name-form']);
+        OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'new']);
+        $product = Product::create(['account_id' => $account->id, 'sku' => 'NO-NAME-1', 'price' => 50, 'currency' => 'AED', 'status' => 'active']);
+        ProductTranslation::create(['product_id' => $product->id, 'locale' => 'ar', 'name' => 'منتج تجريبي']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'product_id' => $product->id,
+            'slug' => 'no-name-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'show_order_form' => true,
+                'order_form_fields' => [[
+                    'internal_name' => 'phone',
+                    'type' => 'phone',
+                    'required' => true,
+                    'is_active' => true,
+                    'sort_order' => 1,
+                    'translations' => [['locale' => 'ar', 'label' => 'رقم الهاتف', 'placeholder' => '05xxxxxxxx']],
+                ]],
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'عرض دون اسم']);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('name="custom[phone]"', false)
+            ->assertDontSee('<input name="name"', false);
+
+        $this->post(route('landing-pages.submit', $page->slug), [
+            'custom' => ['phone' => '0500000001'],
+            'quantity' => 1,
+        ])->assertOk();
+
+        self::assertDatabaseHas('customers', [
+            'phone' => '0500000001',
+            'name' => 'عميل صفحة الهبوط',
+        ]);
+    }
+
     public function test_standard_utm_parameters_are_preserved_by_the_form_and_saved_with_the_order(): void
     {
         $account = Account::create(['name' => 'Campaign Account', 'slug' => 'campaign-account']);
