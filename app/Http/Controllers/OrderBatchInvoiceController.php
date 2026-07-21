@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Support\InvoiceLogo;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class OrderBatchInvoiceController extends Controller
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml(view('public.orders.batch-invoices', [
             'orders' => $orders,
+            'logoData' => InvoiceLogo::dataUri($orders->first()?->account),
             'fontRegular' => base64_encode((string) file_get_contents(public_path('fonts/cairo/Cairo-Regular.ttf'))),
             'fontBold' => base64_encode((string) file_get_contents(public_path('fonts/cairo/Cairo-Bold.ttf'))),
         ])->render(), 'UTF-8');

@@ -22,6 +22,7 @@ use App\Support\OrderMessageTemplate;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\SitePagesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -305,6 +306,56 @@ final class LandivoFoundationTest extends TestCase
             ->assertOk()
             ->assertSee('ملاحظات الطلب')
             ->assertSee('يرجى إحضار جهاز الدفع');
+    }
+
+    public function test_invoice_displays_the_account_logo_without_the_order_status(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('accounts/logos/invoice-logo.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
+
+        $account = Account::create(['name' => 'Logo Account', 'slug' => 'logo-account', 'logo_path' => 'accounts/logos/invoice-logo.png']);
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'STATUS_SHOULD_NOT_APPEAR', 'name_en' => 'Hidden invoice status', 'slug' => 'invoice-hidden-status']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'Invoice Customer', 'phone' => '0501234567']);
+        $order = Order::create(['account_id' => $account->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'LOGO-001', 'subtotal' => 50, 'total' => 50, 'currency' => 'AED']);
+
+        $this->get(URL::signedRoute('orders.invoice', ['order' => $order->id]))
+            ->assertOk()
+            ->assertSee('data:image/png;base64,', false)
+            ->assertDontSee('STATUS_SHOULD_NOT_APPEAR');
+
+        $order->load(['account', 'customer', 'items', 'status']);
+        $batchHtml = view('public.orders.batch-invoices', [
+            'orders' => collect([$order]),
+            'logoData' => 'data:image/png;base64,logo-data',
+            'fontRegular' => '',
+            'fontBold' => '',
+        ])->render();
+
+        self::assertStringContainsString('data:image/png;base64,logo-data', $batchHtml);
+        self::assertStringNotContainsString('STATUS_SHOULD_NOT_APPEAR', $batchHtml);
+    }
+
+    public function test_order_status_report_filters_by_status_and_landing_page_together(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+        $account = Account::create(['name' => 'Filtered Report Account', 'slug' => 'filtered-report-account']);
+        $user = User::factory()->create(['account_id' => $account->id]);
+        $user->assignRole('Account Owner');
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'قيد المتابعة', 'name_en' => 'Following', 'slug' => 'following-report']);
+        $firstPage = LandingPage::create(['account_id' => $account->id, 'slug' => 'first-campaign', 'status' => LandingPageStatus::Published, 'default_locale' => 'ar']);
+        $secondPage = LandingPage::create(['account_id' => $account->id, 'slug' => 'second-campaign', 'status' => LandingPageStatus::Published, 'default_locale' => 'ar']);
+        LandingPageTranslation::create(['landing_page_id' => $firstPage->id, 'locale' => 'ar', 'title' => 'الحملة الأولى']);
+        LandingPageTranslation::create(['landing_page_id' => $secondPage->id, 'locale' => 'ar', 'title' => 'الحملة الثانية']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'Filter Customer', 'phone' => '0501112233']);
+        Order::create(['account_id' => $account->id, 'landing_page_id' => $firstPage->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'FILTER-MATCH', 'subtotal' => 100, 'total' => 100, 'currency' => 'AED']);
+        Order::create(['account_id' => $account->id, 'landing_page_id' => $secondPage->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'FILTER-HIDDEN', 'subtotal' => 200, 'total' => 200, 'currency' => 'AED']);
+
+        $this->actingAs($user)
+            ->get('/admin/order-status-report?status='.$status->id.'&landing_page='.$firstPage->id)
+            ->assertOk()
+            ->assertSee('name="landing_page"', false)
+            ->assertSee('FILTER-MATCH')
+            ->assertDontSee('FILTER-HIDDEN');
     }
 
     public function test_order_status_report_lists_dynamic_statuses_and_account_orders_for_invoice_selection(): void

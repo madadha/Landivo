@@ -13,9 +13,8 @@
         .header{padding:12px 16px;border-radius:12px;background:#12213f;color:#fff}
         .header-table,.data-table,.items-table{width:100%;border-collapse:collapse}
         .header-table td{vertical-align:top}
-        .brand{font-size:18px;font-weight:700}.subtitle{color:#d8e2f3;font-size:8px}
+        .brand-wrap{display:table;width:100%}.brand-logo-cell,.brand-copy{display:table-cell;vertical-align:middle}.brand-logo-cell{width:84px;padding-left:10px}.brand-logo{display:block;width:74px;max-height:44px;object-fit:contain}.brand{font-size:18px;font-weight:700}.subtitle{color:#d8e2f3;font-size:8px}
         .invoice-meta{text-align:left;direction:ltr}.invoice-meta strong{display:block;font-size:12px}.invoice-meta span{color:#d8e2f3;font-size:8px}
-        .status{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;background:#eef4ff;color:#254ca3;font-weight:700}
         .section{margin-top:8px;border:1px solid #e3e8f0;border-radius:10px;overflow:hidden;page-break-inside:avoid}
         .section-title{margin:0;padding:5px 9px;background:#f4f7fb;font-size:10px;font-weight:700}
         .data-table td{width:50%;padding:5px 9px;border-top:1px solid #eef1f5;vertical-align:top}
@@ -36,7 +35,7 @@
     <main class="invoice">
         <header class="header">
             <table class="header-table"><tr>
-                <td><div class="brand">{{ $rtl($order->account?->name ?? 'Landivo') }}</div><div class="subtitle">{{ $rtl('فاتورة طلب') }} / Order Invoice</div>@if($order->status)<span class="status">{{ $rtl($order->status->name_ar) }}</span>@endif</td>
+                <td><div class="brand-wrap">@if($logoData)<div class="brand-logo-cell"><img class="brand-logo" src="{{ $logoData }}" alt=""></div>@endif<div class="brand-copy"><div class="brand">{{ $rtl($order->account?->name ?? 'Landivo') }}</div><div class="subtitle">{{ $rtl('فاتورة طلب') }} / Order Invoice</div></div></div></td>
                 <td class="invoice-meta"><strong>{{ $order->order_number }}</strong><span>{{ $order->created_at?->format('Y-m-d H:i') }}</span></td>
             </tr></table>
         </header>

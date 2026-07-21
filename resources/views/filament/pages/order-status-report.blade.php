@@ -6,7 +6,7 @@
                 <h1>تقرير حالات الطلبات</h1>
                 <p>راقب توزيع الطلبات وقيمة المبيعات، وانتقل مباشرة إلى الطلبات التابعة لكل حالة.</p>
             </div>
-            <a class="osr-primary-link" href="{{ $this->getOrdersUrl() }}">
+            <a class="osr-primary-link" href="{{ $this->getOrdersUrl($selectedStatusId, $selectedLandingPageId) }}">
                 <span>عرض جميع الطلبات</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
             </a>
@@ -38,14 +38,33 @@
                     <h2>اختيار الطلبات وطباعة الفواتير</h2>
                     <p>اختر الحالة، ثم حدد طلبًا واحدًا أو عدة طلبات لتنزيلها في ملف PDF واحد، كل فاتورة في صفحة مستقلة.</p>
                 </div>
-                <form method="get" class="osr-status-filter">
-                    <label for="status-filter">حالة الطلب</label>
-                    <select id="status-filter" name="status" onchange="this.form.submit()">
-                        <option value="">كل الطلبات</option>
-                        @foreach($rows as $status)
-                            <option value="{{ $status->getKey() }}" @selected($selectedStatusId === $status->getKey())>{{ $status->name_ar }} ({{ (int) $status->orders_count }})</option>
-                        @endforeach
-                    </select>
+                <form method="get" class="osr-status-filter osr-report-filters">
+                    <div>
+                        <label for="status-filter">حالة الطلب</label>
+                        <select id="status-filter" name="status" onchange="this.form.submit()">
+                            <option value="">كل الحالات</option>
+                            @foreach($rows as $status)
+                                <option value="{{ $status->getKey() }}" @selected($selectedStatusId === $status->getKey())>{{ $status->name_ar }} ({{ (int) $status->orders_count }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="landing-page-filter">صفحة الهبوط</label>
+                        <select id="landing-page-filter" name="landing_page" onchange="this.form.submit()">
+                            <option value="">كل صفحات الهبوط</option>
+                            @foreach($landingPages as $landingPage)
+                                @php
+                                    $pageTitle = $landingPage->translations->firstWhere('locale', 'ar')?->title
+                                        ?: $landingPage->translations->first()?->title
+                                        ?: $landingPage->slug;
+                                @endphp
+                                <option value="{{ $landingPage->getKey() }}" @selected($selectedLandingPageId === $landingPage->getKey())>{{ $pageTitle }} — /{{ $landingPage->slug }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if($selectedStatusId || $selectedLandingPageId)
+                        <a class="osr-clear-filters" href="{{ url()->current() }}">مسح الفلاتر</a>
+                    @endif
                 </form>
             </header>
 
@@ -67,7 +86,7 @@
                 @if($selectionOrders->isNotEmpty())
                     <div class="osr-orders-table-wrap">
                         <table class="osr-orders-table">
-                            <thead><tr><th class="osr-check-cell"><input type="checkbox" data-header-checkbox aria-label="تحديد كل الطلبات"></th><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>الحالة</th><th>الإجمالي</th><th>ملاحظات الطلب</th><th>التاريخ</th></tr></thead>
+                            <thead><tr><th class="osr-check-cell"><input type="checkbox" data-header-checkbox aria-label="تحديد كل الطلبات"></th><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>الحالة</th><th>صفحة الهبوط</th><th>الإجمالي</th><th>ملاحظات الطلب</th><th>التاريخ</th></tr></thead>
                             <tbody>
                             @foreach($selectionOrders as $order)
                                 <tr>
@@ -76,6 +95,7 @@
                                     <td>{{ $order->customer?->name ?: 'غير مسجل' }}</td>
                                     <td dir="ltr">{{ $order->customer?->phone ?: '—' }}</td>
                                     <td><span class="osr-order-status" style="--status-color:{{ $order->status?->color ?: '#64748b' }}">{{ $order->status?->name_ar ?: 'غير محددة' }}</span></td>
+                                    <td><span class="osr-page-name">{{ $order->landingPage?->translations?->firstWhere('locale', 'ar')?->title ?: $order->landingPage?->slug ?: 'طلب مباشر' }}</span></td>
                                     <td dir="ltr"><strong>{{ number_format((float) $order->total, 2) }}</strong> {{ $order->currency }}</td>
                                     <td><span class="osr-note-preview">{{ filled($order->notes) ? $order->notes : 'لا توجد ملاحظات' }}</span></td>
                                     <td dir="ltr">{{ $order->created_at?->format('Y-m-d H:i') }}</td>
@@ -100,10 +120,10 @@
                 @forelse ($rows as $status)
                     @php
                         $count = (int) $status->orders_count;
-                        $percent = $total > 0 ? round(($count / $total) * 100, 1) : 0;
+                        $percent = $distributionTotal > 0 ? round(($count / $distributionTotal) * 100, 1) : 0;
                         $color = $status->color ?: '#64748b';
                     @endphp
-                    <a class="osr-status" href="{{ $this->getOrdersUrl($status->getKey()) }}" style="--status-color: {{ $color }}">
+                    <a class="osr-status" href="{{ $this->getOrdersUrl($status->getKey(), $selectedLandingPageId) }}" style="--status-color: {{ $color }}">
                         <div class="osr-status-top">
                             <span class="osr-status-mark"><i></i></span>
                             <span class="osr-status-state {{ $status->archived_at ? 'is-archived' : '' }}">{{ $status->archived_at ? 'مؤرشفة' : 'نشطة' }}</span>
@@ -137,7 +157,7 @@
         .osr-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.osr-stat{display:flex;align-items:center;gap:14px;min-height:128px;padding:20px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 9px 28px rgba(16,24,40,.055)}
         .osr-stat-icon{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:15px}.osr-stat--orders .osr-stat-icon{background:#eef4ff;color:#3b70e8}.osr-stat--revenue .osr-stat-icon{background:#eafbf3;color:#16a36a}.osr-stat--average .osr-stat-icon{background:#fff7e6;color:#df8b14}.osr-stat--statuses .osr-stat-icon{background:#f3edff;color:#8756d8}
         .osr-stat div{min-width:0}.osr-stat small,.osr-stat span{display:block;color:var(--muted);font-size:11px}.osr-stat strong{display:block;margin:5px 0 2px;font-size:23px;line-height:1.1;font-weight:900;font-variant-numeric:tabular-nums}
-        .osr-selection{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:#fff;box-shadow:0 12px 34px rgba(16,24,40,.055)}.osr-selection-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:23px 25px;border-bottom:1px solid var(--line)}.osr-selection-head h2{margin:0 0 5px;font-size:21px;font-weight:900}.osr-selection-head p{margin:0;color:var(--muted);font-size:12px}.osr-status-filter{display:grid;gap:6px;min-width:230px}.osr-status-filter label{color:#475467;font-size:11px;font-weight:800}.osr-status-filter select{width:100%;height:44px;border:1px solid #d7dde7;border-radius:12px;background:#fff;padding:0 12px;color:var(--ink);font:inherit;font-size:12px;font-weight:700}.osr-invoice-form{padding:18px}.osr-selection-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.osr-select-all,.osr-download{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border:0;border-radius:12px;padding:0 15px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.osr-select-all{background:#eef2f7;color:#26344d}.osr-select-all:hover{background:#e3e9f1}.osr-download{margin-right:auto;background:#12213f;color:#fff}.osr-download:disabled,.osr-select-all:disabled{cursor:not-allowed;opacity:.45}.osr-download svg{width:17px;height:17px}.osr-selected-count{color:#667085;font-size:11px}.osr-selected-count strong{color:#12213f;font-size:14px}.osr-error{margin-top:12px;border-radius:10px;background:#fff1f1;padding:10px 12px;color:#b42318;font-size:11px;font-weight:800}.osr-orders-table-wrap{overflow:auto;margin-top:15px;border:1px solid #e5e9f0;border-radius:15px}.osr-orders-table{width:100%;min-width:980px;border-collapse:collapse}.osr-orders-table th,.osr-orders-table td{padding:11px 10px;border-bottom:1px solid #edf0f4;text-align:right;vertical-align:middle;font-size:10px}.osr-orders-table th{background:#f7f9fc;color:#667085;font-weight:800;white-space:nowrap}.osr-orders-table tbody tr:hover{background:#fbfcfe}.osr-orders-table tbody tr:last-child td{border-bottom:0}.osr-check-cell{width:42px;text-align:center!important}.osr-check-cell input{width:17px;height:17px;accent-color:#1d4ed8}.osr-order-status{display:inline-flex;align-items:center;gap:6px;color:var(--status-color);font-weight:900}.osr-order-status:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--status-color)}.osr-note-preview{display:block;max-width:220px;overflow:hidden;color:#475467;text-overflow:ellipsis;white-space:nowrap}.osr-selection-empty{display:grid;place-items:center;min-height:120px;color:#667085;font-size:12px}.osr-panel{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:#fff;box-shadow:0 12px 34px rgba(16,24,40,.055)}.osr-panel-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:23px 25px;border-bottom:1px solid var(--line)}.osr-panel-head h2{margin:0 0 5px;font-size:21px;font-weight:900}.osr-panel-head p{margin:0;color:var(--muted);font-size:13px}.osr-count{border-radius:999px;background:#f2f4f7;padding:8px 12px;color:#475467;font-size:12px;font-weight:800}
+        .osr-selection{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:#fff;box-shadow:0 12px 34px rgba(16,24,40,.055)}.osr-selection-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:23px 25px;border-bottom:1px solid var(--line)}.osr-selection-head h2{margin:0 0 5px;font-size:21px;font-weight:900}.osr-selection-head p{margin:0;color:var(--muted);font-size:12px}.osr-status-filter{display:grid;gap:8px;min-width:230px}.osr-report-filters{grid-template-columns:repeat(2,minmax(190px,1fr));min-width:min(100%,500px)}.osr-report-filters>div{display:grid;gap:6px}.osr-status-filter label{color:#475467;font-size:11px;font-weight:800}.osr-status-filter select{width:100%;height:44px;border:1px solid #d7dde7;border-radius:12px;background:#fff;padding:0 12px;color:var(--ink);font:inherit;font-size:12px;font-weight:700}.osr-clear-filters{grid-column:1/-1;justify-self:end;color:#b42318;font-size:11px;font-weight:900;text-decoration:none}.osr-invoice-form{padding:18px}.osr-selection-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.osr-select-all,.osr-download{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border:0;border-radius:12px;padding:0 15px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.osr-select-all{background:#eef2f7;color:#26344d}.osr-select-all:hover{background:#e3e9f1}.osr-download{margin-right:auto;background:#12213f;color:#fff}.osr-download:disabled,.osr-select-all:disabled{cursor:not-allowed;opacity:.45}.osr-download svg{width:17px;height:17px}.osr-selected-count{color:#667085;font-size:11px}.osr-selected-count strong{color:#12213f;font-size:14px}.osr-error{margin-top:12px;border-radius:10px;background:#fff1f1;padding:10px 12px;color:#b42318;font-size:11px;font-weight:800}.osr-orders-table-wrap{overflow:auto;margin-top:15px;border:1px solid #e5e9f0;border-radius:15px}.osr-orders-table{width:100%;min-width:1080px;border-collapse:collapse}.osr-orders-table th,.osr-orders-table td{padding:11px 10px;border-bottom:1px solid #edf0f4;text-align:right;vertical-align:middle;font-size:10px}.osr-orders-table th{background:#f7f9fc;color:#667085;font-weight:800;white-space:nowrap}.osr-orders-table tbody tr:hover{background:#fbfcfe}.osr-orders-table tbody tr:last-child td{border-bottom:0}.osr-check-cell{width:42px;text-align:center!important}.osr-check-cell input{width:17px;height:17px;accent-color:#1d4ed8}.osr-order-status{display:inline-flex;align-items:center;gap:6px;color:var(--status-color);font-weight:900}.osr-order-status:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--status-color)}.osr-page-name{display:block;max-width:190px;overflow:hidden;color:#344054;font-weight:800;text-overflow:ellipsis;white-space:nowrap}.osr-note-preview{display:block;max-width:220px;overflow:hidden;color:#475467;text-overflow:ellipsis;white-space:nowrap}.osr-selection-empty{display:grid;place-items:center;min-height:120px;color:#667085;font-size:12px}.osr-panel{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:#fff;box-shadow:0 12px 34px rgba(16,24,40,.055)}.osr-panel-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:23px 25px;border-bottom:1px solid var(--line)}.osr-panel-head h2{margin:0 0 5px;font-size:21px;font-weight:900}.osr-panel-head p{margin:0;color:var(--muted);font-size:13px}.osr-count{border-radius:999px;background:#f2f4f7;padding:8px 12px;color:#475467;font-size:12px;font-weight:800}
         .osr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px}.osr-status{position:relative;display:block;overflow:hidden;padding:20px;border:1px solid var(--line);border-radius:19px;background:linear-gradient(180deg,#fff,#fcfcfd);color:inherit;text-decoration:none;transition:transform .2s,border-color .2s,box-shadow .2s}.osr-status:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--status-color)}.osr-status:hover{transform:translateY(-3px);border-color:var(--status-color);box-shadow:0 15px 30px rgba(16,24,40,.09)}
         .osr-status-top,.osr-status-title,.osr-progress-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.osr-status-mark{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:#f2f4f7}.osr-status-mark i{width:9px;height:9px;border-radius:50%;background:var(--status-color);box-shadow:0 0 0 4px #fff}.osr-status-state{border-radius:999px;background:#eafbf3;padding:5px 9px;color:#087a50;font-size:10px;font-weight:800}.osr-status-state.is-archived{background:#f2f4f7;color:#667085}
         .osr-status-title{margin-top:16px}.osr-status-title h3{margin:0 0 3px;font-size:18px;font-weight:900}.osr-status-title p{margin:0;color:var(--muted);font-size:11px;direction:ltr;text-align:right}.osr-status-title>svg{color:#98a2b3}
@@ -145,7 +165,7 @@
         .osr-progress-head{margin-bottom:7px;color:var(--muted);font-size:10px}.osr-progress-head strong{color:var(--ink);font-size:11px}.osr-progress{height:7px;overflow:hidden;border-radius:999px;background:#eef1f5}.osr-progress i{display:block;height:100%;border-radius:inherit;background:var(--status-color);transition:width .3s}.osr-open{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:15px;color:var(--status-color);font-size:11px;font-weight:900}.osr-open svg{width:15px;height:15px}
         .osr-empty{grid-column:1/-1;display:grid;place-items:center;gap:12px;min-height:220px;color:var(--muted)}.osr-empty a{color:#2563eb;font-weight:800}
         @media(max-width:1050px){.osr-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
-        @media(max-width:760px){.osr{gap:15px}.osr-hero{align-items:flex-start;flex-direction:column;padding:24px 20px;border-radius:20px}.osr-primary-link{width:100%;justify-content:center}.osr-selection-head{align-items:stretch;flex-direction:column;padding:20px}.osr-status-filter{min-width:0}.osr-selection-toolbar{align-items:stretch}.osr-select-all,.osr-download{flex:1}.osr-download{margin-right:0}.osr-selected-count{width:100%;order:3;text-align:center}.osr-grid{grid-template-columns:1fr;padding:14px}.osr-panel-head{align-items:flex-start;padding:20px;flex-direction:column}.osr-count{align-self:flex-start}}
+        @media(max-width:760px){.osr{gap:15px}.osr-hero{align-items:flex-start;flex-direction:column;padding:24px 20px;border-radius:20px}.osr-primary-link{width:100%;justify-content:center}.osr-selection-head{align-items:stretch;flex-direction:column;padding:20px}.osr-status-filter{min-width:0}.osr-report-filters{grid-template-columns:1fr}.osr-selection-toolbar{align-items:stretch}.osr-select-all,.osr-download{flex:1}.osr-download{margin-right:0}.osr-selected-count{width:100%;order:3;text-align:center}.osr-grid{grid-template-columns:1fr;padding:14px}.osr-panel-head{align-items:flex-start;padding:20px;flex-direction:column}.osr-count{align-self:flex-start}}
         @media(max-width:520px){.osr-summary{grid-template-columns:1fr 1fr;gap:9px}.osr-stat{display:block;min-height:132px;padding:14px}.osr-stat-icon{width:38px;height:38px;margin-bottom:12px}.osr-stat-icon svg{width:18px}.osr-stat strong{font-size:18px}.osr-stat span{font-size:9px}.osr-status{padding:17px}.osr-metrics{grid-template-columns:1fr}.osr-metrics>div+div{border-top:1px solid #e4e7ec;border-right:0;padding-top:10px;padding-right:0}}
     </style>
 
