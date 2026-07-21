@@ -266,6 +266,72 @@ final class LandivoFoundationTest extends TestCase
         self::assertSame('summer', data_get($order->utm_parameters, 'utm_campaign'));
     }
 
+    public function test_admin_can_download_selected_order_invoices_as_one_pdf_scoped_to_their_account(): void
+    {
+        $account = Account::create(['name' => 'Invoice Account', 'slug' => 'invoice-account']);
+        $otherAccount = Account::create(['name' => 'Other Invoice Account', 'slug' => 'other-invoice-account']);
+        $user = User::factory()->create(['account_id' => $account->id]);
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'invoice-new']);
+        $otherStatus = OrderStatus::create(['account_id' => $otherAccount->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'other-invoice-new']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'عميل الفاتورة', 'phone' => '0500000000', 'email' => 'invoice@example.com']);
+        $otherCustomer = Customer::create(['account_id' => $otherAccount->id, 'name' => 'عميل آخر', 'phone' => '0511111111']);
+
+        $firstOrder = Order::create(['account_id' => $account->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'INV-001', 'subtotal' => 100, 'total' => 100, 'currency' => 'AED', 'notes' => 'اتصل قبل التوصيل']);
+        $secondOrder = Order::create(['account_id' => $account->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'INV-002', 'subtotal' => 200, 'total' => 200, 'currency' => 'AED', 'notes' => 'التوصيل مساءً']);
+        $otherOrder = Order::create(['account_id' => $otherAccount->id, 'customer_id' => $otherCustomer->id, 'order_status_id' => $otherStatus->id, 'order_number' => 'INV-OTHER', 'subtotal' => 300, 'total' => 300, 'currency' => 'AED']);
+        OrderItem::create(['order_id' => $firstOrder->id, 'product_name' => 'العرض الأول', 'quantity' => 1, 'unit_price' => 100, 'total' => 100]);
+        OrderItem::create(['order_id' => $secondOrder->id, 'product_name' => 'العرض الثاني', 'quantity' => 1, 'unit_price' => 200, 'total' => 200]);
+
+        $response = $this->actingAs($user)->post(route('reports.order-status.invoices'), [
+            'order_ids' => [$firstOrder->id, $secondOrder->id],
+        ]);
+
+        $response->assertOk()->assertHeader('content-type', 'application/pdf');
+        self::assertStringStartsWith('%PDF-', $response->getContent());
+
+        $this->actingAs($user)
+            ->post(route('reports.order-status.invoices'), ['order_ids' => [$firstOrder->id, $otherOrder->id]])
+            ->assertForbidden();
+    }
+
+    public function test_invoice_views_always_include_the_order_notes_section(): void
+    {
+        $account = Account::create(['name' => 'Notes Account', 'slug' => 'notes-account']);
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'جديد', 'name_en' => 'New', 'slug' => 'notes-new']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'عميل الملاحظات', 'phone' => '0522222222']);
+        $order = Order::create(['account_id' => $account->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'NOTES-001', 'subtotal' => 50, 'total' => 50, 'currency' => 'AED', 'notes' => 'يرجى إحضار جهاز الدفع']);
+
+        $this->get(URL::signedRoute('orders.invoice', ['order' => $order->id]))
+            ->assertOk()
+            ->assertSee('ملاحظات الطلب')
+            ->assertSee('يرجى إحضار جهاز الدفع');
+    }
+
+    public function test_order_status_report_lists_dynamic_statuses_and_account_orders_for_invoice_selection(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+        $account = Account::create(['name' => 'Report Account', 'slug' => 'report-account']);
+        $otherAccount = Account::create(['name' => 'Hidden Report Account', 'slug' => 'hidden-report-account']);
+        $user = User::factory()->create(['account_id' => $account->id]);
+        $user->assignRole('Account Owner');
+        $status = OrderStatus::create(['account_id' => $account->id, 'name_ar' => 'حالة ديناميكية', 'name_en' => 'Dynamic Status', 'slug' => 'dynamic-report-status']);
+        $otherStatus = OrderStatus::create(['account_id' => $otherAccount->id, 'name_ar' => 'حالة مخفية', 'name_en' => 'Hidden Status', 'slug' => 'hidden-report-status']);
+        $customer = Customer::create(['account_id' => $account->id, 'name' => 'عميل التقرير', 'phone' => '0533333333']);
+        $otherCustomer = Customer::create(['account_id' => $otherAccount->id, 'name' => 'عميل مخفي', 'phone' => '0544444444']);
+        $order = Order::create(['account_id' => $account->id, 'customer_id' => $customer->id, 'order_status_id' => $status->id, 'order_number' => 'REPORT-001', 'subtotal' => 70, 'total' => 70, 'currency' => 'AED', 'notes' => 'ملاحظة التقرير']);
+        Order::create(['account_id' => $otherAccount->id, 'customer_id' => $otherCustomer->id, 'order_status_id' => $otherStatus->id, 'order_number' => 'REPORT-HIDDEN', 'subtotal' => 80, 'total' => 80, 'currency' => 'AED']);
+
+        $this->actingAs($user)
+            ->get('/admin/order-status-report?status='.$status->id)
+            ->assertOk()
+            ->assertSee('حالة ديناميكية')
+            ->assertSee('REPORT-001')
+            ->assertSee('name="order_ids[]" value="'.$order->id.'"', false)
+            ->assertSee('ملاحظة التقرير')
+            ->assertDontSee('REPORT-HIDDEN')
+            ->assertDontSee('حالة مخفية');
+    }
+
     public function test_featured_approved_reviews_are_rendered_on_a_landing_page(): void
     {
         $account = Account::create(['name' => 'Acme', 'slug' => 'acme-reviews']);

@@ -33,9 +33,21 @@ class OrderStatusReport extends Page
             ->orderBy('sort_order')
             ->get();
 
+        $selectedStatusId = request()->integer('status') ?: null;
+        if ($selectedStatusId && ! $rows->contains('id', $selectedStatusId)) {
+            $selectedStatusId = null;
+        }
+
+        $selectionOrders = Order::query()
+            ->where('account_id', $accountId)
+            ->when($selectedStatusId, fn (Builder $builder, int $statusId): Builder => $builder->where('order_status_id', $statusId))
+            ->with(['customer:id,name,phone,email', 'status:id,name_ar,name_en,color'])
+            ->latest('created_at')
+            ->get();
+
         $averageOrderValue = $total > 0 ? $revenue / $total : 0;
 
-        return compact('rows', 'total', 'revenue', 'averageOrderValue');
+        return compact('rows', 'total', 'revenue', 'averageOrderValue', 'selectedStatusId', 'selectionOrders');
     }
 
     public function getOrdersUrl(?int $statusId = null): string

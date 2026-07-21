@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrderInvoiceController;
+use App\Http\Controllers\OrderBatchInvoiceController;
 use App\Http\Controllers\PublicLandingPageController;
 use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ReviewController;
@@ -69,6 +70,7 @@ Route::get('/reviews/order/{order}', [ReviewController::class, 'orderForm'])->mi
 Route::post('/reviews/order/{order}', [ReviewController::class, 'storeOrder'])->middleware(['signed', 'throttle:5,10'])->name('reviews.order.store');
 Route::get('/orders/{order}/invoice', OrderInvoiceController::class)->middleware('signed')->name('orders.invoice');
 Route::middleware('auth')->group(function (): void {
+    Route::post('/reports/order-status/invoices', OrderBatchInvoiceController::class)->name('reports.order-status.invoices');
     Route::get('/reports/orders/export', [ReportExportController::class, 'orders'])->name('reports.orders.export');
     Route::get('/reports/reviews/export', [ReportExportController::class, 'reviews'])->name('reports.reviews.export');
 });
