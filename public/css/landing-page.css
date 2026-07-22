@@ -48,3 +48,6 @@
 .hero{--hero-inline-padding:clamp(18px,5vw,56px)}
 .hero-image-full .product-image{width:calc(100% + (var(--hero-inline-padding) * 2));max-width:none;margin-inline:calc(var(--hero-inline-padding) * -1);border-radius:0}
 @media(max-width:640px){.hero-image-full{overflow:visible}.hero-image-full .product-image{width:calc(100% + (var(--hero-inline-padding) * 2) + 22px);margin-inline:calc((var(--hero-inline-padding) * -1) - 11px)}}
+
+/* Keep uploaded option artwork visible; the legacy required-marker rule hides direct spans. */
+.order-form-card .field-options .option-choice>.option-adornment{display:inline-flex!important}

@@ -159,6 +159,11 @@ final class LandivoFoundationTest extends TestCase
             ->assertSee('/storage/landing-pages/form-option-badges/premium.webp', false)
             ->assertSee('--badge-image-size:64px', false)
             ->assertSee('Best seller');
+
+        self::assertStringContainsString(
+            '.order-form-card .field-options .option-choice>.option-adornment{display:inline-flex!important}',
+            file_get_contents(public_path('css/landing-page.css')),
+        );
     }
 
     public function test_hidden_social_media_section_is_not_rendered(): void
