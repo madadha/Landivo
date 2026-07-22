@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Notifications\VerifyEmailAuthentication;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\EditProfile;
 use App\Filament\Pages\SystemSettings;
@@ -41,7 +42,9 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->multiFactorAuthentication(
-                EmailAuthentication::make()->codeExpiryMinutes(5),
+                EmailAuthentication::make()
+                    ->codeExpiryMinutes(5)
+                    ->codeNotification(VerifyEmailAuthentication::class),
             )
             ->profile(EditProfile::class)
             ->brandName(fn (): string => auth()->user()?->account?->name ?? Account::query()->value('name') ?? 'Landivo')

@@ -18,6 +18,7 @@ use App\Models\ProductTranslation;
 use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\User;
+use App\Notifications\VerifyEmailAuthentication;
 use App\Support\OrderMessageTemplate;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\SitePagesSeeder;
@@ -305,7 +306,24 @@ final class LandivoFoundationTest extends TestCase
         $this->get(URL::signedRoute('orders.invoice', ['order' => $order->id]))
             ->assertOk()
             ->assertSee('ملاحظات الطلب')
-            ->assertSee('يرجى إحضار جهاز الدفع');
+            ->assertSee('يرجى إحضار جهاز الدفع')
+            ->assertSee('تم إصدار هذه الفاتورة بواسطة')
+            ->assertSee('Notes Account');
+    }
+
+    public function test_login_code_email_uses_the_company_name_from_system_settings(): void
+    {
+        config(['mail.from.address' => 'info@example.com']);
+
+        $account = Account::create(['name' => 'شركة المواسم', 'slug' => 'mail-company']);
+        $user = User::factory()->create(['account_id' => $account->id, 'name' => 'رعد']);
+
+        $mail = (new VerifyEmailAuthentication('123456', 5))->toMail($user);
+
+        self::assertSame('mail.auth.login-code', $mail->view);
+        self::assertSame(['info@example.com', 'شركة المواسم'], $mail->from);
+        self::assertSame('شركة المواسم', $mail->viewData['companyName']);
+        self::assertStringContainsString('شركة المواسم', view($mail->view, $mail->viewData)->render());
     }
 
     public function test_invoice_displays_the_account_logo_without_the_order_status(): void
@@ -332,6 +350,7 @@ final class LandivoFoundationTest extends TestCase
         ])->render();
 
         self::assertStringContainsString('data:image/png;base64,logo-data', $batchHtml);
+        self::assertStringContainsString('Logo Account', $batchHtml);
         self::assertStringNotContainsString('STATUS_SHOULD_NOT_APPEAR', $batchHtml);
     }
 

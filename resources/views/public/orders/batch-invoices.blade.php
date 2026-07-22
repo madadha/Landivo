@@ -32,10 +32,11 @@
 @php($arabic = new \ArPHP\I18N\Arabic)
 @php($rtl = fn (mixed $text): string => $arabic->utf8Glyphs((string) $text, 500, false, false))
 @foreach($orders as $order)
+    @php($companyName = $order->account?->name ?: config('app.name', 'Landivo'))
     <main class="invoice">
         <header class="header">
             <table class="header-table"><tr>
-                <td><div class="brand-wrap">@if($logoData)<div class="brand-logo-cell"><img class="brand-logo" src="{{ $logoData }}" alt=""></div>@endif<div class="brand-copy"><div class="brand">{{ $rtl($order->account?->name ?? 'Landivo') }}</div><div class="subtitle">{{ $rtl('فاتورة طلب') }} / Order Invoice</div></div></div></td>
+                <td><div class="brand-wrap">@if($logoData)<div class="brand-logo-cell"><img class="brand-logo" src="{{ $logoData }}" alt=""></div>@endif<div class="brand-copy"><div class="brand">{{ $rtl($companyName) }}</div><div class="subtitle">{{ $rtl('فاتورة طلب') }} / Order Invoice</div></div></div></td>
                 <td class="invoice-meta"><strong>{{ $order->order_number }}</strong><span>{{ $order->created_at?->format('Y-m-d H:i') }}</span></td>
             </tr></table>
         </header>
@@ -68,7 +69,7 @@
         </section>
 
         <div class="total-box"><span>{{ $rtl('الإجمالي النهائي') }}</span><strong>{{ number_format((float) $order->total, 2) }} {{ $order->currency }}</strong></div>
-        <footer class="footer">{{ $rtl('تم إنشاء هذه الفاتورة من نظام Landivo بتاريخ') }} {{ now()->format('Y-m-d H:i') }}</footer>
+        <footer class="footer">{{ $rtl('تم إصدار هذه الفاتورة بواسطة '.$companyName.' بتاريخ') }} {{ now()->format('Y-m-d H:i') }}</footer>
     </main>
 @endforeach
 </body>
