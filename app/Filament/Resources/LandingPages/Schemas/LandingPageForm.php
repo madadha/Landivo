@@ -589,6 +589,28 @@ class LandingPageForm
                                                         TextInput::make('option_number')->label('رقم الخيار / Option number')->numeric()->minValue(1)->required()->default(1),
                                                         TextInput::make('badge_text_ar')->label('نص الشارة بالعربية')->placeholder('الأكثر طلباً'),
                                                         TextInput::make('badge_text_en')->label('English badge text')->placeholder('Most Popular'),
+                                                        FileUpload::make('image_path')
+                                                            ->label('صورة تمييز اختيارية / Optional option image')
+                                                            ->helperText('تظهر بجانب العرض. اتركها فارغة لاستخدام الأيقونة الجاهزة فقط. يفضل PNG أو WebP مربع بخلفية شفافة.')
+                                                            ->image()
+                                                            ->disk('public')
+                                                            ->directory('landing-pages/form-option-badges')
+                                                            ->visibility('public')
+                                                            ->maxSize(2048)
+                                                            ->imageEditor()
+                                                            ->openable()
+                                                            ->downloadable()
+                                                            ->columnSpan(2),
+                                                        Select::make('image_size')->label('حجم الصورة / Image size')->options([
+                                                            'small' => 'صغير / Small',
+                                                            'medium' => 'متوسط / Medium',
+                                                            'large' => 'كبير / Large',
+                                                        ])->default('medium'),
+                                                        Select::make('image_shape')->label('شكل الصورة / Image shape')->options([
+                                                            'rounded' => 'حواف ناعمة / Rounded',
+                                                            'circle' => 'دائري / Circle',
+                                                            'square' => 'مربع / Square',
+                                                        ])->default('rounded'),
                                                         Select::make('icon')->label('الأيقونة / Icon')->options(['star' => 'نجمة / Star', 'fire' => 'الأكثر طلباً / Fire', 'percent' => 'خصم / Discount', 'crown' => 'تاج / Crown', 'sparkles' => 'مميز / Sparkles', 'check' => 'موصى به / Recommended'])->default('star'),
                                                         Select::make('style')->label('شكل الشارة / Badge style')->options(['pill' => 'كبسولة / Pill', 'ribbon' => 'شريط زاوية / Ribbon', 'floating' => 'عائمة / Floating', 'outline' => 'إطار / Outline'])->default('pill'),
                                                         ColorPicker::make('background_color')->label('لون الشارة / Background')->default('#F59E0B'),

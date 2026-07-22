@@ -124,6 +124,43 @@ final class LandivoFoundationTest extends TestCase
         ]);
     }
 
+    public function test_an_option_badge_can_render_an_optional_image(): void
+    {
+        $account = Account::create(['name' => 'Badge Image Account', 'slug' => 'badge-image-account']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'slug' => 'badge-image-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'show_order_form' => true,
+                'order_form_fields' => [[
+                    'internal_name' => 'offer',
+                    'type' => 'radio',
+                    'options' => "Basic offer\nPremium offer",
+                    'is_active' => true,
+                    'translations' => [['locale' => 'ar', 'label' => 'Choose offer']],
+                    'option_badges' => [[
+                        'option_number' => 2,
+                        'badge_text_ar' => 'Best seller',
+                        'image_path' => 'landing-pages/form-option-badges/premium.webp',
+                        'image_size' => 'large',
+                        'image_shape' => 'circle',
+                    ]],
+                ]],
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'Badge Image Offer']);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('class="option-adornment"', false)
+            ->assertSee('class="option-badge-image image-shape-circle"', false)
+            ->assertSee('/storage/landing-pages/form-option-badges/premium.webp', false)
+            ->assertSee('--badge-image-size:64px', false)
+            ->assertSee('Best seller');
+    }
+
     public function test_hidden_social_media_section_is_not_rendered(): void
     {
         $account = Account::create(['name' => 'Hidden Social', 'slug' => 'hidden-social']);
