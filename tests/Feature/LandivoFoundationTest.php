@@ -110,11 +110,12 @@ final class LandivoFoundationTest extends TestCase
         $this->get(route('landing-pages.show', $page->slug))
             ->assertOk()
             ->assertSee('name="custom[phone]"', false)
-            ->assertDontSee('<input name="name"', false);
+            ->assertDontSee('<input name="name"', false)
+            ->assertDontSee('name="city"', false)
+            ->assertDontSee('name="quantity"', false);
 
         $this->post(route('landing-pages.submit', $page->slug), [
             'custom' => ['phone' => '0500000001'],
-            'quantity' => 1,
         ])->assertOk();
 
         self::assertDatabaseHas('customers', [

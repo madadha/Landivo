@@ -190,21 +190,14 @@ class PublicLandingPageController extends Controller
             $formFields = collect(data_get($formSection?->settings, 'fields', []));
         }
         $formFields = $formFields
-            ->filter(fn ($field) => filled($field['internal_name'] ?? $field['key'] ?? null) && ! (app()->getLocale() === 'ar' ? str_ends_with((string) ($field['internal_name'] ?? $field['key']), '_en') : str_ends_with((string) ($field['internal_name'] ?? $field['key']), '_ar')))
+            ->filter(fn ($field) => ($field['is_active'] ?? true) && filled($field['internal_name'] ?? $field['key'] ?? null) && ! (app()->getLocale() === 'ar' ? str_ends_with((string) ($field['internal_name'] ?? $field['key']), '_en') : str_ends_with((string) ($field['internal_name'] ?? $field['key']), '_ar')))
             ->values();
-        $fieldKeys = $formFields->map(fn ($field) => $field['internal_name'] ?? $field['key'])->all();
-        $hasDynamicPhone = in_array('phone', $fieldKeys, true);
-        $hasDynamicCity = (bool) array_intersect($fieldKeys, ['city', 'emirate']);
-        $hasDynamicQuantity = in_array('quantity', $fieldKeys, true);
+        $usesLegacyFields = $formFields->isEmpty();
 
         $rules = [];
-        if (! $hasDynamicPhone) {
+        if ($usesLegacyFields) {
             $rules['phone'] = ['required', 'string', 'max:40'];
-        }
-        if (! $hasDynamicQuantity) {
             $rules['quantity'] = ['nullable', 'integer', 'min:1', 'max:100'];
-        }
-        if (! $hasDynamicCity) {
             $rules['city'] = ['nullable', 'string', 'max:100'];
         }
 
