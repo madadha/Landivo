@@ -47,3 +47,4 @@
 /* Full-width hero media keeps the complete image while removing side gutters. */
 .hero{--hero-inline-padding:clamp(18px,5vw,56px)}
 .hero-image-full .product-image{width:calc(100% + (var(--hero-inline-padding) * 2));max-width:none;margin-inline:calc(var(--hero-inline-padding) * -1);border-radius:0}
+@media(max-width:640px){.hero-image-full{overflow:visible}.hero-image-full .product-image{width:calc(100% + (var(--hero-inline-padding) * 2) + 22px);margin-inline:calc((var(--hero-inline-padding) * -1) - 11px)}}
