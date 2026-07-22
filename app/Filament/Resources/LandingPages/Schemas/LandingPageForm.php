@@ -253,6 +253,13 @@ class LandingPageForm
                                             TextInput::make('settings.heading_size')->label(__('landivo.landing_pages.heading_size'))->numeric()->minValue(24)->maxValue(72)->default(44),
                                             TextInput::make('settings.body_size')->label(__('landivo.landing_pages.body_size'))->numeric()->minValue(14)->maxValue(24)->default(18),
                                             ColorPicker::make('settings.primary_color')->label(__('landivo.landing_pages.primary_color'))->default('#4f46e5'),
+                                            ColorPicker::make('settings.page_background_color')
+                                                ->label('لون خلفية صفحة الهبوط / Page background color')
+                                                ->default('#F7F8FC'),
+                                            Toggle::make('settings.product_image_full_width')
+                                                ->label('تمديد الصورة الرئيسية بعرض البطاقة / Full-width main image')
+                                                ->helperText('يعرض الصورة كاملة حتى حواف البطاقة مع الحفاظ على أبعادها ومن دون قصّها.')
+                                                ->default(true),
                                         ]),
                                     ])
                                     ->collapsible(),

@@ -623,6 +623,38 @@ final class LandivoFoundationTest extends TestCase
             ->assertSee('منتج مفحوص وموثق');
     }
 
+    public function test_landing_page_can_use_a_custom_background_and_full_width_product_image(): void
+    {
+        $account = Account::create(['name' => 'Visual Account', 'slug' => 'visual-account']);
+        $product = Product::create([
+            'account_id' => $account->id,
+            'sku' => 'VISUAL-1',
+            'price' => 100,
+            'currency' => 'AED',
+            'status' => 'active',
+            'primary_image_path' => 'products/visual.jpg',
+        ]);
+        ProductTranslation::create(['product_id' => $product->id, 'locale' => 'ar', 'name' => 'منتج مرئي']);
+        $page = LandingPage::create([
+            'account_id' => $account->id,
+            'product_id' => $product->id,
+            'slug' => 'visual-offer',
+            'status' => LandingPageStatus::Published,
+            'default_locale' => 'ar',
+            'settings' => [
+                'page_background_color' => '#EAF3E6',
+                'product_image_full_width' => true,
+            ],
+        ]);
+        LandingPageTranslation::create(['landing_page_id' => $page->id, 'locale' => 'ar', 'title' => 'عرض مرئي']);
+
+        $this->get(route('landing-pages.show', $page->slug))
+            ->assertOk()
+            ->assertSee('--surface:#EAF3E6', false)
+            ->assertSee('class="hero hero-image-full"', false)
+            ->assertSee('class="product-image"', false);
+    }
+
     public function test_order_follow_up_becomes_due_and_all_changes_are_logged(): void
     {
         $this->travelTo('2026-07-20 09:00:00');

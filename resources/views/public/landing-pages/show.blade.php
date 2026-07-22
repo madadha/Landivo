@@ -16,6 +16,8 @@
     @php($headingSize = max(24, min(72, (int) ($design['heading_size'] ?? 44))))
     @php($bodySize = max(14, min(24, (int) ($design['body_size'] ?? 18))))
     @php($primaryColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) ($design['primary_color'] ?? '')) ? $design['primary_color'] : '#4f46e5')
+    @php($pageBackgroundColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) ($design['page_background_color'] ?? '')) ? $design['page_background_color'] : '#F7F8FC')
+    @php($productImageFullWidth = (bool) data_get($design, 'product_image_full_width', true))
     @php($currentPriceColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) ($design['current_price_color'] ?? '')) ? $design['current_price_color'] : $primaryColor)
     @php($comparePriceColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) ($design['compare_price_color'] ?? '')) ? $design['compare_price_color'] : '#98a2b3')
     @php($currentPriceSize = max(20, min(64, (int) ($design['current_price_size'] ?? 32))))
@@ -41,6 +43,7 @@
     </style>
     <link rel="stylesheet" href="{{ asset('css/landing-page.css') }}?v={{ filemtime(public_path('css/landing-page.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ filemtime(public_path('css/fonts.css')) }}">
+    <style>:root{--surface:{{ $pageBackgroundColor }}}</style>
     <style>.hero-title-row{flex-wrap:nowrap;justify-content:var(--hero-title-justify,center)}.hero-title-row h1{min-width:0;flex:0 1 auto;color:var(--hero-title-color);font-family:var(--hero-title-font);font-size:clamp(24px,5vw,var(--hero-title-size));text-align:var(--hero-title-align)}.hero .description{color:var(--hero-description-color);font-size:var(--hero-description-size);text-align:var(--hero-description-align)}</style>
     <style>
         .media-slider{position:relative;padding:0;overflow:hidden;border-radius:var(--slider-radius);background:#fff}.media-slider-track{display:flex;overflow:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth}.media-slide{display:block;flex:0 0 100%;width:100%;height:var(--slider-height);object-fit:var(--slider-fit);scroll-snap-align:start;background:#f8fafc}.slider-style-cards{padding:18px}.slider-style-cards .media-slide{border-radius:calc(var(--slider-radius) * .65);box-shadow:0 12px 36px #0f172a1f}.slider-style-full_bleed{border-radius:0}.slider-style-fade .media-slider-track{position:relative;height:var(--slider-height)}.slider-style-fade .media-slide{position:absolute;inset:0;opacity:0;transition:opacity var(--slider-speed) ease}.slider-style-fade .media-slide.is-active{opacity:1}.slider-arrow{position:absolute;top:50%;z-index:3;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;padding:0;transform:translateY(-50%);background:#fffffff0;color:#172033;box-shadow:0 8px 24px #0f172a24}.slider-arrow-prev{inset-inline-start:16px}.slider-arrow-next{inset-inline-end:16px}.media-slider-dots{position:absolute;z-index:3;inset-inline:0;bottom:14px;display:flex;justify-content:center;gap:7px}.media-slider-dot{width:9px;height:9px;padding:0;border-radius:999px;background:#ffffffa6;box-shadow:0 0 0 1px #0f172a1f}.media-slider-dot.is-active{width:28px;background:var(--brand)}
@@ -96,7 +99,7 @@
     @php($titleBadgeFontSize = max(10, min(30, (int) data_get($landingPage->settings, 'title_badge_font_size', 14))))
     @php($titleBadgeFonts = ['inherit' => 'inherit', 'cairo' => 'Cairo, Tahoma, sans-serif', 'tajawal' => 'Tajawal, Tahoma, sans-serif', 'inter' => 'Inter, Arial, sans-serif', 'noto' => 'Noto Sans Arabic, Tahoma, sans-serif'])
     @php($titleBadgeFont = $titleBadgeFonts[data_get($landingPage->settings, 'title_badge_font_family', 'inherit')] ?? 'inherit')
-    <section class="hero" style="order:{{ $sectionPosition('hero', 0) }};--hero-title-color:{{ $headingColor }};--hero-title-font:{{ $headingFont }};--hero-title-size:{{ $headingSize }}px;--hero-title-align:{{ $headingAlignment }};--hero-title-justify:{{ $headingJustify }};--hero-description-color:{{ $descriptionColor }};--hero-description-size:{{ $descriptionSize }}px;--hero-description-align:{{ $descriptionAlignment }}">
+    <section class="hero{{ $productImageFullWidth ? ' hero-image-full' : '' }}" style="order:{{ $sectionPosition('hero', 0) }};--hero-title-color:{{ $headingColor }};--hero-title-font:{{ $headingFont }};--hero-title-size:{{ $headingSize }}px;--hero-title-align:{{ $headingAlignment }};--hero-title-justify:{{ $headingJustify }};--hero-description-color:{{ $descriptionColor }};--hero-description-size:{{ $descriptionSize }}px;--hero-description-align:{{ $descriptionAlignment }}">
         <div class="hero-title-row badge-placement-{{ $titleBadgePlacement }}">
             @if($titleBadgeEnabled)
                 <span class="title-verification-badge badge-icon-{{ $titleBadgeIcon }} badge-style-{{ $titleBadgeStyle }}" style="--badge-color:{{ $titleBadgeColor }};--badge-check-color:{{ $titleBadgeCheckColor }};--badge-text-color:{{ $titleBadgeTextColor }};--badge-font-size:{{ $titleBadgeFontSize }}px;--badge-font-family:{{ $titleBadgeFont }}" @if($titleBadgeStyle === 'icon_only') role="img" aria-label="{{ $titleBadgeText }}" title="{{ $titleBadgeText }}" @endif>
