@@ -359,6 +359,14 @@ php artisan view:cache
 ### P1 — المبيعات والأتمتة
 
 - تكامل رسمي مع WhatsApp Business API بدل الروابط فقط.
+- مركز حملات واتساب متكامل لإرسال العروض إلى العملاء والـ Leads بعد الحصول على موافقتهم.
+- إدارة الجمهور عبر الشرائح والوسوم والمصدر وصفحة الهبوط والحملة الإعلانية.
+- قوالب واتساب عربية وإنجليزية مع متغيرات ديناميكية مثل اسم العميل والعرض ورابط صفحة الهبوط.
+- جدولة الحملات وإرسالها على دفعات عبر Queue مع تحديد السرعة، إعادة المحاولة، ومنع الإرسال المكرر.
+- تقارير للحملات تشمل الإرسال والتسليم والقراءة والنقر والرد وإلغاء الاشتراك والطلبات الناتجة.
+- قائمة منع وموافقات تسويقية مستقلة لكل قناة لحماية رقم واتساب واحترام خصوصية العملاء.
+- تتبع روابط الحملات عبر UTM وربط كل طلب بالحملة والرسالة التي أدت إلى التحويل.
+- إضافة حملات البريد الإلكتروني لاحقًا كقناة مكملة بعد اكتمال بنية حملات واتساب.
 - Workflow مرن للحالات مع قواعد تلقائية وإشعارات.
 - حجوزات مخزون مؤقتة ومنع البيع الزائد.
 - استعادة الطلبات/النماذج غير المكتملة.
@@ -452,9 +460,10 @@ Production deployments must preserve `.env`, the database, and persistent storag
 ### Recommended next steps
 
 1. Operational monitoring, automated backups, restore drills, E2E tests, and CI/CD.
-2. Official WhatsApp API, payment gateways, abandoned-lead recovery, and inventory reservations.
+2. A consent-based WhatsApp Business campaign center with audience segments, bilingual templates, scheduled queue delivery, suppression lists, UTM attribution, and delivery/conversion analytics.
 3. SaaS billing, documented APIs/webhooks, object storage/CDN, and granular permissions.
 4. Conversion experiments, funnels, fraud detection, and assisted merchandising.
+5. Add email campaigns later as a complementary channel after the WhatsApp campaign infrastructure is established.
 
 ---
 
