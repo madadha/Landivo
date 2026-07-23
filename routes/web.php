@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DataTransferController;
 use App\Http\Controllers\MarketingPopupEventController;
 use App\Http\Controllers\OrderBatchInvoiceController;
 use App\Http\Controllers\OrderInvoiceController;
@@ -72,6 +73,8 @@ Route::get('/reviews/order/{order}', [ReviewController::class, 'orderForm'])->mi
 Route::post('/reviews/order/{order}', [ReviewController::class, 'storeOrder'])->middleware(['signed', 'throttle:5,10'])->name('reviews.order.store');
 Route::get('/orders/{order}/invoice', OrderInvoiceController::class)->middleware('signed')->name('orders.invoice');
 Route::middleware('auth')->group(function (): void {
+    Route::get('/data-transfers/{dataTransfer}/download', [DataTransferController::class, 'download'])->name('data-transfers.download');
+    Route::get('/data-transfers/templates/{entity}', [DataTransferController::class, 'template'])->name('data-transfers.template');
     Route::post('/reports/order-status/invoices', OrderBatchInvoiceController::class)->name('reports.order-status.invoices');
     Route::get('/reports/orders/export', [ReportExportController::class, 'orders'])->name('reports.orders.export');
     Route::get('/reports/reviews/export', [ReportExportController::class, 'reviews'])->name('reports.reviews.export');

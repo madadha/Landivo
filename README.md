@@ -47,7 +47,7 @@ Landivo ليست مجرد منشئ صفحة هبوط. النظام يربط ال
 | صفحات الهبوط | صفحات الهبوط، معرض الصفحات، صفحات الشكر | بناء رحلة التحويل من الإعلان حتى صفحة ما بعد الطلب |
 | الموقع والمحتوى | إعداد الصفحة الرئيسية، صفحات الموقع | إدارة الموقع العام والقوائم والمحتوى الثابت |
 | التسويق | النوافذ التسويقية | الحملات والنوافذ المنبثقة والاستهداف |
-| التقارير والتحليلات | بحث العملاء، تحليلات الزوار، حالات الطلبات، تصدير الطلبات، تقرير التقييمات | اتخاذ القرار وقياس الأداء والتصدير |
+| التقارير والتحليلات | البحث الموحد، بحث العملاء، تحليلات الزوار، حالات الطلبات، تصدير الطلبات، تقرير التقييمات، مركز الاستيراد والتصدير | اتخاذ القرار والبحث وقياس الأداء ونقل البيانات |
 | إدارة النظام | المستخدمون، الصلاحيات والأدوار، إعدادات النظام، سجل التدقيق | الهوية، الأمن، الصلاحيات وتتبع التغييرات |
 
 لوحة التحكم الرئيسية تبقى مستقلة في أعلى القائمة لأنها نقطة البداية اليومية.
@@ -123,6 +123,9 @@ Landivo ليست مجرد منشئ صفحة هبوط. النظام يربط ال
 - تقارير حالات الطلبات والمبيعات والتقييمات.
 - بحث موحد باسم العميل أو الهاتف أو البريد.
 - تصدير CSV وطباعة فواتير حسب الفلاتر.
+- بحث مركزي فوري ومفهرس في الطلبات والعملاء والمنتجات.
+- استيراد العملاء والمنتجات وتصدير الطلبات والعملاء والمنتجات عبر Queue Jobs.
+- متابعة تقدم عمليات نقل البيانات وتنزيل النتائج وقوالب CSV الجاهزة.
 
 ### 7. النظام والأمان
 
@@ -365,8 +368,8 @@ php artisan view:cache
 - API موثق وWebhooks للطلبات والمخزون والعملاء.
 - صلاحيات أدق على مستوى الإجراء والسجل.
 - تخزين كائنات/CDN وتحويل الصور إلى WebP/AVIF.
-- بحث سريع موحد وفهرسة للطلبات والعملاء والمنتجات.
-- استيراد وتصدير كبير عبر Jobs مع متابعة تقدم.
+- استيراد الطلبات بعد بناء قواعد تحقق ومراجعة تمنع إنشاء طلبات تشغيلية ناقصة.
+- استيراد وتصدير XLSX إلى جانب CSV عند الحاجة التشغيلية.
 
 ### P3 — التحسين الذكي
 
@@ -393,7 +396,7 @@ Landivo is a bilingual landing-page commerce and operations platform. It connect
 | Landing Pages | Landing Pages, Page Gallery, Thank-you Pages |
 | Website & Content | Homepage Settings, Site Pages |
 | Marketing | Marketing Popups |
-| Reports & Analytics | Customer Search, Visitor Analytics, Status Report, Order Export, Reviews Report |
+| Reports & Analytics | Global Search, Customer Search, Visitor Analytics, Status Report, Order Export, Reviews Report, Data Transfer Center |
 | System Administration | Users, Roles, System Settings, Audit Log |
 
 ### Core capabilities
@@ -403,6 +406,8 @@ Landivo is a bilingual landing-page commerce and operations platform. It connect
 - Product variants, media, pricing, stock, and delivery-aware inventory updates.
 - Order lifecycle, activity log, reminders, files, WhatsApp templates, and PDF invoices.
 - UTM attribution from the public URL to the stored order.
+- Indexed global search across orders, customers, and products.
+- Queue-based CSV imports and exports with progress tracking and downloadable templates.
 - Independent thank-you pages and secure customer review links.
 - Dynamic homepage, menus, footer, legal pages, and product catalog.
 - Popups, announcement tickers, social links, visitor analytics, and exports.
