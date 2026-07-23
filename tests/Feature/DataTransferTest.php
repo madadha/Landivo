@@ -2,13 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Pages\DataTransferCenter;
 use App\Jobs\ProcessDataExport;
 use App\Jobs\ProcessDataImport;
 use App\Models\Account;
 use App\Models\DataTransfer;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class DataTransferTest extends TestCase
@@ -70,5 +73,38 @@ class DataTransferTest extends TestCase
         Storage::disk('local')->assertExists($transfer->result_path);
         $this->assertStringContainsString('OIL-16', Storage::disk('local')->get($transfer->result_path));
         $this->assertSame(1, (int) $transfer->succeeded_rows);
+    }
+
+    public function test_it_clears_only_finished_transfers_and_their_files(): void
+    {
+        Storage::fake('local');
+        $account = Account::query()->create(['name' => 'Test', 'slug' => 'test']);
+        $user = User::factory()->create(['account_id' => $account->id]);
+        Storage::disk('local')->put('data-transfers/result.csv', 'result');
+
+        $completed = DataTransfer::query()->create([
+            'account_id' => $account->id,
+            'user_id' => $user->id,
+            'type' => 'export',
+            'entity' => 'products',
+            'status' => 'completed',
+            'result_path' => 'data-transfers/result.csv',
+        ]);
+        $running = DataTransfer::query()->create([
+            'account_id' => $account->id,
+            'user_id' => $user->id,
+            'type' => 'export',
+            'entity' => 'orders',
+            'status' => 'processing',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(DataTransferCenter::class)
+            ->call('clearHistory')
+            ->assertHasNoErrors();
+
+        $this->assertModelMissing($completed);
+        $this->assertModelExists($running);
+        Storage::disk('local')->assertMissing('data-transfers/result.csv');
     }
 }

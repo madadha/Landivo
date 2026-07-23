@@ -9,6 +9,7 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
@@ -111,6 +112,48 @@ class DataTransferCenter extends Page
             ->send();
     }
 
+    public function clearHistory(): void
+    {
+        $transfers = DataTransfer::query()
+            ->where('account_id', auth()->user()?->account_id)
+            ->whereIn('status', ['completed', 'failed'])
+            ->get();
+
+        $transfers->each(fn (DataTransfer $transfer) => $this->deleteTransferFiles($transfer));
+        DataTransfer::query()->whereKey($transfers->modelKeys())->delete();
+
+        Notification::make()
+            ->title('تم تنظيف سجل العمليات')
+            ->body("حُذفت {$transfers->count()} عملية مع ملفاتها المؤقتة والنتائج التابعة لها.")
+            ->success()
+            ->send();
+    }
+
+    public function deleteTransfer(int $transferId): void
+    {
+        $transfer = DataTransfer::query()
+            ->where('account_id', auth()->user()?->account_id)
+            ->findOrFail($transferId);
+
+        if ($transfer->isRunning()) {
+            Notification::make()
+                ->title('لا يمكن حذف عملية جارية')
+                ->body('انتظر حتى تكتمل العملية أو تفشل، ثم أعد المحاولة.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $this->deleteTransferFiles($transfer);
+        $transfer->delete();
+
+        Notification::make()
+            ->title('تم حذف العملية')
+            ->success()
+            ->send();
+    }
+
     protected function getViewData(): array
     {
         return [
@@ -131,5 +174,13 @@ class DataTransferCenter extends Page
     public function templateUrl(string $entity): string
     {
         return route('data-transfers.template', ['entity' => $entity]);
+    }
+
+    private function deleteTransferFiles(DataTransfer $transfer): void
+    {
+        Storage::disk('local')->delete(array_filter([
+            $transfer->source_path,
+            $transfer->result_path,
+        ]));
     }
 }

@@ -55,7 +55,19 @@
         </section>
 
         <section class="ldv-transfer__history">
-            <header><div><span>سجل العمليات</span><h2>التقدم والملفات الناتجة</h2></div><small>آخر 30 عملية</small></header>
+            <header>
+                <div><span>سجل العمليات</span><h2>التقدم والملفات الناتجة</h2></div>
+                <div class="ldv-transfer__history-actions">
+                    <small>آخر 30 عملية</small>
+                    @if($transfers->contains(fn ($transfer) => ! $transfer->isRunning()))
+                        <button
+                            type="button"
+                            wire:click="clearHistory"
+                            wire:confirm="سيتم حذف كل العمليات المكتملة والفاشلة وملفات CSV التابعة لها. هل تريد المتابعة؟"
+                        >تنظيف السجل</button>
+                    @endif
+                </div>
+            </header>
             <div class="ldv-transfer__list">
                 @forelse($transfers as $transfer)
                     @php($progress = $transfer->progressPercentage())
@@ -75,6 +87,14 @@
                             <strong>{{ $progress }}%</strong>
                             @if($transfer->type === 'export' && $transfer->status === 'completed')
                                 <a href="{{ $this->downloadUrl($transfer) }}">تنزيل CSV</a>
+                            @endif
+                            @if(! $transfer->isRunning())
+                                <button
+                                    type="button"
+                                    wire:click="deleteTransfer({{ $transfer->id }})"
+                                    wire:confirm="حذف هذه العملية وملفاتها نهائيًا؟"
+                                    title="حذف العملية"
+                                >حذف</button>
                             @endif
                         </div>
                     </article>
