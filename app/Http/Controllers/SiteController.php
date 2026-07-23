@@ -20,14 +20,50 @@ class SiteController extends Controller
     public function home(): View
     {
         if (! Schema::hasTable('accounts')) {
-            return view('site.home', ['account' => null, 'settings' => [], 'sitePages' => collect(), 'products' => collect(), 'campaigns' => collect()]);
+            return view('site.home', ['account' => null, 'settings' => [], 'sitePages' => collect(), 'products' => collect(), 'campaigns' => collect(), 'slideProducts' => collect()]);
         }
 
         $account = Account::query()->first();
-        $products = Product::query()->with(['translations', 'media'])->where('account_id', $account?->id)->where('status', ProductStatus::Active->value)->latest()->limit(12)->get();
+        $settings = (array) ($account?->settings ?? []);
+        $configuredProducts = collect($settings['home_products'] ?? [])
+            ->filter(fn (array $item): bool => ($item['is_active'] ?? true) && filled($item['product_id'] ?? null));
+        $configuredProductIds = $configuredProducts->pluck('product_id')->map(fn ($id): int => (int) $id)->unique()->values();
+        $productLimit = max(1, min(24, (int) ($settings['home_products_limit'] ?? 8)));
+
+        $productQuery = Product::query()
+            ->with(['translations', 'media'])
+            ->where('account_id', $account?->id)
+            ->where('status', ProductStatus::Active->value);
+
+        if ($configuredProductIds->isNotEmpty()) {
+            $productsById = (clone $productQuery)->whereKey($configuredProductIds)->get()->keyBy('id');
+            $products = $configuredProductIds
+                ->map(fn (int $id) => $productsById->get($id))
+                ->filter()
+                ->take($productLimit)
+                ->values();
+        } else {
+            $products = $productQuery->latest()->limit($productLimit)->get();
+        }
+
+        $slideProductIds = collect($settings['home_slides'] ?? [])
+            ->filter(fn (array $slide): bool => ($slide['is_active'] ?? true) && filled($slide['product_id'] ?? null))
+            ->pluck('product_id')
+            ->map(fn ($id): int => (int) $id)
+            ->unique()
+            ->values();
+        $slideProducts = $slideProductIds->isEmpty()
+            ? collect()
+            : Product::query()
+                ->with(['translations', 'media'])
+                ->where('account_id', $account?->id)
+                ->where('status', ProductStatus::Active->value)
+                ->whereKey($slideProductIds)
+                ->get()
+                ->keyBy('id');
         $campaigns = LandingPage::query()->with('translations')->where('account_id', $account?->id)->where('status', LandingPageStatus::Published->value)->latest('published_at')->limit(6)->get();
 
-        return view('site.home', $this->shared($account) + compact('products', 'campaigns'));
+        return view('site.home', $this->shared($account) + compact('products', 'campaigns', 'slideProducts'));
     }
 
     public function show(SitePage $sitePage): View
