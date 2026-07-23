@@ -23,7 +23,7 @@ class ProductsTable
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['translations', 'media']))
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('sort_order')
             ->columns([
                 ImageColumn::make('primary_image_path')
                     ->label(__('landivo.products.image'))
@@ -42,6 +42,18 @@ class ProductsTable
                             ->orWhereHas('translations', fn (Builder $translation): Builder => $translation->where('name', 'like', "%{$search}%"));
                     })),
                 TextColumn::make('sku')->label(__('landivo.products.sku'))->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('sort_order')
+                    ->label('الترتيب')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('product_badge')
+                    ->label('الشارة')
+                    ->state(fn (Product $record): ?string => $record->badge_is_active
+                        ? ($record->badge_text_ar ?: $record->badge_text_en)
+                        : null)
+                    ->placeholder('—')
+                    ->badge()
+                    ->color(fn (Product $record): string => $record->badge_is_active ? 'warning' : 'gray'),
                 TextColumn::make('media_count')->label('الوسائط')->counts('media')->badge()->color('info'),
                 TextColumn::make('variants_count')->label('المتغيرات')->counts('variants')->badge()->color('warning'),
                 TextColumn::make('price')->label(__('landivo.products.price'))->money(fn (Product $record): string => $record->currency)->sortable(),

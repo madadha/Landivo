@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\ProductStatus;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
@@ -27,6 +28,55 @@ class ProductForm
                 TextInput::make('currency')->label(__('landivo.products.currency'))->required()->default('USD')->maxLength(3),
                 TextInput::make('quantity')->label(__('landivo.products.quantity'))->numeric()->integer()->required()->default(0),
                 Select::make('status')->label(__('landivo.products.status'))->options(collect(ProductStatus::cases())->mapWithKeys(fn (ProductStatus $status): array => [$status->value => $status->label()])->all())->required()->default(ProductStatus::Draft->value),
+                TextInput::make('sort_order')
+                    ->label('ترتيب العرض في الموقع / Website display order')
+                    ->helperText('الرقم الأصغر يظهر أولًا في الصفحة الرئيسية وصفحة المنتجات.')
+                    ->numeric()
+                    ->integer()
+                    ->minValue(0)
+                    ->default(0)
+                    ->required(),
+                Section::make('شارة المنتج / Product Badge')
+                    ->description('أضف علامة واضحة فوق صورة المنتج مثل «عرض» أو «عرض مميز». تظهر تلقائيًا باللغة الحالية.')
+                    ->icon('heroicon-o-tag')
+                    ->schema([
+                        Toggle::make('badge_is_active')
+                            ->label('إظهار الشارة / Show badge')
+                            ->default(false)
+                            ->live(),
+                        TextInput::make('badge_text_ar')
+                            ->label('نص الشارة بالعربية')
+                            ->placeholder('عرض مميز')
+                            ->helperText('إذا تركته فارغًا سيظهر تلقائيًا: عرض مميز')
+                            ->maxLength(80)
+                            ->visible(fn (Get $get): bool => (bool) $get('badge_is_active')),
+                        TextInput::make('badge_text_en')
+                            ->label('Badge text in English')
+                            ->placeholder('Featured offer')
+                            ->helperText('If empty, “Featured offer” is displayed automatically.')
+                            ->maxLength(80)
+                            ->visible(fn (Get $get): bool => (bool) $get('badge_is_active')),
+                        Select::make('badge_style')
+                            ->label('شكل الشارة / Badge style')
+                            ->options([
+                                'pill' => 'كبسولة / Pill',
+                                'ribbon' => 'شريط / Ribbon',
+                                'outline' => 'إطار / Outline',
+                            ])
+                            ->default('pill')
+                            ->required()
+                            ->visible(fn (Get $get): bool => (bool) $get('badge_is_active')),
+                        ColorPicker::make('badge_background_color')
+                            ->label('لون الشارة / Badge color')
+                            ->default('#d97706')
+                            ->visible(fn (Get $get): bool => (bool) $get('badge_is_active')),
+                        ColorPicker::make('badge_text_color')
+                            ->label('لون النص / Text color')
+                            ->default('#ffffff')
+                            ->visible(fn (Get $get): bool => (bool) $get('badge_is_active')),
+                    ])
+                    ->columns(3)
+                    ->collapsible(),
                 Section::make(__('landivo.products.image'))->schema([
                     FileUpload::make('primary_image_path')->label(__('landivo.products.image'))->image()->disk('public')->directory('products')->visibility('public')->openable()->downloadable(),
                     FileUpload::make('metadata.image_ar')->label('Product image (Arabic)')->image()->disk('public')->directory('products')->visibility('public')->openable()->downloadable(),

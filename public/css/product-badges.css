@@ -1,0 +1,77 @@
+.product-custom-badge {
+    --product-badge-bg: #d97706;
+    --product-badge-text: #fff;
+    position: absolute;
+    z-index: 4;
+    top: 12px;
+    inset-inline-end: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: calc(100% - 82px);
+    padding: 7px 12px;
+    overflow: hidden;
+    background: var(--product-badge-bg);
+    color: var(--product-badge-text);
+    box-shadow: 0 9px 22px color-mix(in srgb, var(--product-badge-bg) 30%, transparent);
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.web-product-media > .product-custom-badge,
+.web-product-main-image > .product-custom-badge,
+.product-card-image > .product-custom-badge {
+    color: var(--product-badge-text);
+}
+
+.product-custom-badge--pill {
+    border-radius: 999px;
+}
+
+.product-custom-badge--ribbon {
+    top: 16px;
+    inset-inline-end: -7px;
+    border-radius: 7px 0 0 7px;
+    padding-inline: 16px 19px;
+}
+
+[dir="ltr"] .product-custom-badge--ribbon {
+    border-radius: 0 7px 7px 0;
+}
+
+.product-custom-badge--ribbon::after {
+    position: absolute;
+    inset-inline-end: 0;
+    bottom: -7px;
+    width: 7px;
+    height: 7px;
+    background: color-mix(in srgb, var(--product-badge-bg) 65%, #000);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    content: "";
+}
+
+.product-custom-badge--outline {
+    border: 2px solid var(--product-badge-bg);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .94);
+    color: var(--product-badge-text);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .1);
+}
+
+@media (max-width: 640px) {
+    .product-custom-badge {
+        top: 8px;
+        inset-inline-end: 8px;
+        max-width: calc(100% - 64px);
+        padding: 5px 8px;
+        font-size: 9px;
+    }
+
+    .product-custom-badge--ribbon {
+        inset-inline-end: -5px;
+        padding-inline: 10px 13px;
+    }
+}

@@ -87,9 +87,10 @@ Landivo ليست مجرد منشئ صفحة هبوط. النظام يربط ال
 
 - محتوى وصور متعددة اللغات.
 - أسعار قبل وبعد الخصم.
+- شارات عروض اختيارية ومتعددة اللغات مثل «عرض» و«عرض مميز»، مع ثلاثة تصاميم وألوان مستقلة للخلفية والنص.
 - خيارات ومتغيرات Product Options / Variants.
 - وسائط متعددة للمنتج.
-- ترتيب وحالة إظهار.
+- ترتيب رقمي موحّد يتحكم في ظهور المنتجات داخل الصفحة الرئيسية وصفحة المنتجات.
 - مخزون مرتبط بالمنتج أو صفحة الهبوط.
 - تحديث المخزون عند وصول الطلب إلى حالة التسليم.
 - منع الحذف المباشر للسجلات المرتبطة، مع الأرشفة كخيار آمن.
@@ -109,9 +110,11 @@ Landivo ليست مجرد منشئ صفحة هبوط. النظام يربط ال
 ### 5. الموقع العام
 
 - صفحة رئيسية ديناميكية.
-- شعار، Favicon، سلايدر ومنتجات مميزة.
+- شعار، Favicon، سلايدر مرن ومنتجات مميزة مع إعدادات مستقلة لكل شريحة.
+- تحكم كامل من قاعدة البيانات بعناوين الصفحة الرئيسية، بطاقات الثقة، الصورة الجانبية، أقسام المنتجات والعروض والفوتر.
 - قائمة رأس وقائمة فوتر قابلة للإدارة.
 - صفحات المنتجات والتفاصيل ومن نحن والتواصل والخصوصية والشروط.
+- صفحة منتجات تدعم الترقيم التقليدي أو التحميل التدريجي/التلقائي، مع عدد عناصر قابل للتحديد.
 - دعم العربية والإنجليزية.
 
 ### 6. التسويق والتحليلات
@@ -131,6 +134,7 @@ Landivo ليست مجرد منشئ صفحة هبوط. النظام يربط ال
 
 - مستخدمون، أدوار وصلاحيات.
 - إعدادات شركة متعددة اللغات وشعار وصورة مستخدم.
+- مبدّل المظهر الفاتح والداكن في الشريط العلوي للوصول السريع دون ازدحام قائمة المستخدم.
 - لغة افتراضية وكود دولة وبيانات اتصال وبنك وSEO.
 - استعادة كلمة المرور.
 - تفعيل اختياري لرمز التحقق عند دخول الإدارة.
@@ -404,13 +408,17 @@ Landivo is a bilingual landing-page commerce and operations platform. It connect
 - Fully dynamic Arabic/English landing pages with ordered sections.
 - Conditional form builder with translated fields and options.
 - Product variants, media, pricing, stock, and delivery-aware inventory updates.
+- Localized product offer badges with optional labels, pill/ribbon/outline styles, and independent text/background colors.
+- Consistent numeric product ordering across the homepage and product catalog.
 - Order lifecycle, activity log, reminders, files, WhatsApp templates, and PDF invoices.
 - UTM attribution from the public URL to the stored order.
 - Indexed global search across orders, customers, and products.
 - Queue-based CSV imports and exports with progress tracking and downloadable templates.
 - Independent thank-you pages and secure customer review links.
-- Dynamic homepage, menus, footer, legal pages, and product catalog.
+- Fully database-driven homepage, hero slides, trust cards, featured products, offers, menus, footer, legal pages, and product catalog.
+- Product catalog pagination or progressive/infinite loading with configurable page size.
 - Popups, announcement tickers, social links, visitor analytics, and exports.
+- Top-bar light/dark/system theme controls in the administration panel.
 - Role-based administration, optional login verification, and audit trails.
 
 ### Local setup

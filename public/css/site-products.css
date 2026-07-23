@@ -1,0 +1,73 @@
+.web-infinite-products {
+    display: grid;
+    justify-items: center;
+    gap: 9px;
+    min-height: 72px;
+    margin-top: 34px;
+}
+
+.web-infinite-products button {
+    min-width: 180px;
+    min-height: 48px;
+    border: 1px solid var(--web-navy);
+    border-radius: 14px;
+    padding: 10px 22px;
+    background: var(--web-navy);
+    color: #fff;
+    box-shadow: 0 12px 28px rgba(16, 26, 49, .16);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.web-infinite-products button:hover {
+    transform: translateY(-2px);
+    background: #1d2b4b;
+}
+
+.web-infinite-products button:disabled {
+    cursor: wait;
+    opacity: .65;
+    transform: none;
+}
+
+.web-infinite-products p {
+    min-height: 20px;
+    margin: 0;
+    color: var(--web-muted);
+    font-size: 11px;
+}
+
+.web-load-spinner {
+    display: none;
+    width: 24px;
+    height: 24px;
+    border: 3px solid #e4e7ec;
+    border-top-color: var(--web-brand);
+    border-radius: 50%;
+    animation: web-load-spin .7s linear infinite;
+}
+
+.web-infinite-products.is-loading .web-load-spinner {
+    display: block;
+}
+
+.web-infinite-products.is-loading button {
+    display: none;
+}
+
+@keyframes web-load-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 700px) {
+    .web-infinite-products {
+        margin-top: 24px;
+    }
+
+    .web-infinite-products button {
+        width: 100%;
+    }
+}

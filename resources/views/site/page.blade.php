@@ -7,7 +7,36 @@
 <section class="web-page-hero {{ $translation?->hero_image?'has-image':'' }}" @if($translation?->hero_image) style="--page-hero:url('{{ Storage::disk('public')->url($translation->hero_image) }}')" @endif><div class="web-container"><span>{{ $account?->name }}</span><h1>{{ $translation?->title }}</h1>@if($translation?->excerpt)<p>{{ $translation->excerpt }}</p>@endif</div></section>
 
 @if($sitePage->template==='products')
-<section class="web-section"><div class="web-container"><div class="web-products-grid">@forelse($products as $product)@include('site.partials.product-card',['product'=>$product])@empty<div class="web-empty">{{ $isArabic?'لا توجد منتجات متاحة حاليًا.':'No products are currently available.' }}</div>@endforelse</div>@if(method_exists($products,'links'))@include('site.partials.pagination', ['paginator' => $products])@endif</div></section>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/site-products.css') }}">
+@endpush
+<section class="web-section">
+    <div class="web-container" data-products-catalog>
+        <div class="web-products-grid" data-products-grid>
+            @include('site.partials.product-cards', ['products' => $products])
+        </div>
+
+        @if($productsLoadMode === 'infinite')
+            @if($products->hasMorePages())
+                <div class="web-infinite-products" data-products-loader data-next-url="{{ $products->nextPageUrl() }}">
+                    <span class="web-load-spinner" aria-hidden="true"></span>
+                    <button type="button" data-load-more>
+                        {{ $settings[$isArabic ? 'products_load_more_ar' : 'products_load_more_en'] ?? ($isArabic ? 'تحميل المزيد' : 'Load more') }}
+                    </button>
+                    <p data-load-status aria-live="polite"></p>
+                </div>
+            @endif
+            <noscript>@include('site.partials.pagination', ['paginator' => $products])</noscript>
+        @else
+            @include('site.partials.pagination', ['paginator' => $products])
+        @endif
+    </div>
+</section>
+@if($productsLoadMode === 'infinite')
+    @push('scripts')
+        <script src="{{ asset('js/site-products.js') }}" defer></script>
+    @endpush
+@endif
 @else
 <section class="web-page-content {{ in_array($sitePage->template,['privacy','terms'],true)?'web-legal-page':'' }}"><div class="web-container web-content-shell">
 @if(in_array($sitePage->template,['privacy','terms'],true))<nav class="web-legal-nav" aria-label="{{ $isArabic?'الصفحات القانونية':'Legal pages' }}"><div><strong>{{ $isArabic?'المركز القانوني':'Legal center' }}</strong><span>{{ $isArabic?'معلومات واضحة لحماية حقوقك وتجربتك.':'Clear information for a trusted experience.' }}</span></div>@foreach($sitePages->whereIn('template',['privacy','terms']) as $legalPage)<a href="{{ route('site.pages.show',$legalPage->slug) }}" class="{{ $legalPage->is($sitePage)?'active':'' }}">{{ $legalPage->translation()?->navigation_label ?: $legalPage->translation()?->title }} <b>←</b></a>@endforeach</nav>@endif

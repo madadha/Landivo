@@ -55,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
                 ? Storage::disk('public')->url(auth()->user()?->account?->logo_path ?? Account::query()->value('logo_path'))
                 : null)
             ->brandLogoHeight('3.5rem')
+            ->themeSwitcher(false)
             ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, function (): string {
                 $accountId = auth()->user()?->account_id;
                 $newStatus = OrderStatus::query()
@@ -68,7 +69,7 @@ class AdminPanelProvider extends PanelProvider
                     'filters' => ['order_status_id' => ['values' => [(string) $newStatus->getKey()]]],
                 ] : []);
 
-                return view('components.admin-order-notification', compact('newOrders', 'ordersUrl'))->render();
+                return view('components.admin-topbar-tools', compact('newOrders', 'ordersUrl'))->render();
             })
             ->renderHook(PanelsRenderHook::PAGE_HEADER_ACTIONS_BEFORE, fn (): string => view('components.admin-save-action')->render())
             ->userMenuItems([

@@ -6,6 +6,8 @@
     $fallbackImage = data_get($product->metadata, $isArabic ? 'image_ar' : 'image_en') ?: $product->primary_image_path;
     $mainImage = $gallery->first()?->file_path ?: $fallbackImage;
     $discount = $product->compare_at_price && $product->compare_at_price > $product->price ? round((1 - $product->price / $product->compare_at_price) * 100) : 0;
+    $badgeLabel = $product->badgeLabel();
+    $badgeStyle = in_array($product->badge_style, ['pill', 'ribbon', 'outline'], true) ? $product->badge_style : 'pill';
     $reviews = $product->reviews;
     $rating = $reviews->isNotEmpty() ? round((float) $reviews->avg('rating'), 1) : null;
     $whatsAppMessage = $isArabic ? 'مرحبًا، أريد الاستفسار عن '.$translation?->name : 'Hello, I would like to ask about '.$translation?->name;
@@ -19,7 +21,7 @@
         <nav class="web-breadcrumb" aria-label="Breadcrumb"><a href="{{ route('site.home') }}">{{ $isArabic?'الرئيسية':'Home' }}</a><span>›</span>@if($productsPage=$sitePages->firstWhere('template','products'))<a href="{{ route('site.pages.show',$productsPage->slug) }}">{{ $isArabic?'المنتجات':'Products' }}</a><span>›</span>@endif<strong>{{ $translation?->name ?? $product->sku }}</strong></nav>
         <div class="web-product-detail">
             <div class="web-product-gallery" data-product-gallery>
-                <div class="web-product-main-image">@if($mainImage)<img src="{{ Storage::disk('public')->url($mainImage) }}" alt="{{ $translation?->name ?? $product->sku }}" data-main-image>@else<span>{{ $account?->name ?? 'Landivo' }}</span>@endif @if($discount)<b>{{ $isArabic?'وفر':'Save' }} {{ $discount }}%</b>@endif</div>
+                <div class="web-product-main-image">@if($mainImage)<img src="{{ Storage::disk('public')->url($mainImage) }}" alt="{{ $translation?->name ?? $product->sku }}" data-main-image>@else<span>{{ $account?->name ?? 'Landivo' }}</span>@endif @if($product->hasVisibleBadge())<span class="product-custom-badge product-custom-badge--{{ $badgeStyle }}" style="--product-badge-bg:{{ $product->badge_background_color ?: '#d97706' }};--product-badge-text:{{ $product->badge_text_color ?: '#ffffff' }}">{{ $badgeLabel }}</span>@endif @if($discount)<b>{{ $isArabic?'وفر':'Save' }} {{ $discount }}%</b>@endif</div>
                 @if($gallery->count()>1)<div class="web-product-thumbs">@foreach($gallery as $media)<button type="button" class="{{ $loop->first?'active':'' }}" data-gallery-thumb data-image="{{ Storage::disk('public')->url($media->file_path) }}"><img src="{{ Storage::disk('public')->url($media->file_path) }}" alt="{{ $media->alt_text ?: $translation?->name }}"></button>@endforeach</div>@endif
             </div>
             <article class="web-product-summary">

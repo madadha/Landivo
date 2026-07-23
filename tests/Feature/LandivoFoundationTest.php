@@ -960,6 +960,69 @@ final class LandivoFoundationTest extends TestCase
             ->assertSee(url('/terms-and-conditions'));
     }
 
+    public function test_homepage_sections_footer_and_product_order_are_database_driven(): void
+    {
+        $account = Account::create([
+            'name' => 'Dynamic Store',
+            'slug' => 'dynamic-store',
+            'settings' => [
+                'home_slider_enabled' => false,
+                'home_features' => [[
+                    'icon' => 'quality',
+                    'title_ar' => 'ميزة ديناميكية',
+                    'title_en' => 'Dynamic feature',
+                    'subtitle_ar' => 'وصف من قاعدة البيانات',
+                    'subtitle_en' => 'Database description',
+                    'is_active' => true,
+                ]],
+                'home_products_kicker_ar' => 'اختيار خاص',
+                'home_products_title_ar' => 'ترتيب المنتجات',
+                'home_products_description_ar' => 'وصف المنتجات المخصص',
+                'home_about_title_ar' => 'عنوان تعريفي مخصص',
+                'home_about_description_ar' => 'وصف تعريفي مخصص',
+                'home_campaigns_title_ar' => 'عروض مخصصة',
+                'footer_description_ar' => 'وصف الفوتر الديناميكي',
+                'footer_links_title_ar' => 'روابط المتجر',
+                'footer_contact_title_ar' => 'بيانات التواصل',
+                'footer_help_title_ar' => 'تحتاج مساعدة الآن؟',
+                'footer_help_text_ar' => 'نحن جاهزون لخدمتك.',
+                'footer_copyright_ar' => 'حقوق {company} محفوظة لعام {year}',
+                'footer_trust_ar' => 'تسوق بثقة',
+            ],
+        ]);
+
+        $second = Product::create([
+            'account_id' => $account->id,
+            'sku' => 'ORDER-2',
+            'price' => 20,
+            'currency' => 'AED',
+            'quantity' => 5,
+            'status' => 'active',
+            'sort_order' => 20,
+        ]);
+        $first = Product::create([
+            'account_id' => $account->id,
+            'sku' => 'ORDER-1',
+            'price' => 10,
+            'currency' => 'AED',
+            'quantity' => 5,
+            'status' => 'active',
+            'sort_order' => 10,
+        ]);
+        ProductTranslation::create(['product_id' => $second->id, 'locale' => 'ar', 'name' => 'المنتج الثاني']);
+        ProductTranslation::create(['product_id' => $first->id, 'locale' => 'ar', 'name' => 'المنتج الأول']);
+
+        $this->get(route('site.home'))
+            ->assertOk()
+            ->assertSee('ميزة ديناميكية')
+            ->assertSee('اختيار خاص')
+            ->assertSee('عنوان تعريفي مخصص')
+            ->assertSee('وصف الفوتر الديناميكي')
+            ->assertSee('روابط المتجر')
+            ->assertSee('تسوق بثقة')
+            ->assertSeeInOrder(['المنتج الأول', 'المنتج الثاني']);
+    }
+
     public function test_product_cards_link_to_a_complete_product_details_page(): void
     {
         $account = Account::create(['name' => 'Catalog', 'slug' => 'catalog-details']);
@@ -971,6 +1034,12 @@ final class LandivoFoundationTest extends TestCase
             'currency' => 'AED',
             'quantity' => 8,
             'status' => 'active',
+            'badge_is_active' => true,
+            'badge_text_ar' => 'عرض مميز',
+            'badge_text_en' => 'Featured offer',
+            'badge_style' => 'ribbon',
+            'badge_background_color' => '#7c3aed',
+            'badge_text_color' => '#ffffff',
         ]);
         ProductTranslation::create([
             'product_id' => $product->id,
@@ -982,13 +1051,77 @@ final class LandivoFoundationTest extends TestCase
 
         $this->get(route('site.home'))
             ->assertOk()
-            ->assertSee(route('site.products.show', $product), false);
+            ->assertSee(route('site.products.show', $product), false)
+            ->assertSee('عرض مميز')
+            ->assertSee('product-custom-badge--ribbon', false);
 
         $this->get(route('site.products.show', $product))
             ->assertOk()
             ->assertSee('منتج بتفاصيل كاملة')
             ->assertSee('تفاصيل موثوقة وواضحة.')
+            ->assertSee('عرض مميز')
             ->assertSee('99.00');
+
+        $this->withSession(['locale' => 'en'])
+            ->get(route('site.products.show', $product))
+            ->assertOk()
+            ->assertSee('Featured offer');
+
+        $product->update(['badge_text_ar' => null, 'badge_text_en' => null]);
+        self::assertSame('عرض مميز', $product->fresh()->badgeLabel('ar'));
+        self::assertSame('Featured offer', $product->fresh()->badgeLabel('en'));
+    }
+
+    public function test_products_page_supports_numbered_and_infinite_loading_modes(): void
+    {
+        $account = Account::create([
+            'name' => 'Catalog loading',
+            'slug' => 'catalog-loading',
+            'settings' => [
+                'products_load_mode' => 'infinite',
+                'products_per_page' => 4,
+                'products_load_more_ar' => 'المزيد من المنتجات',
+            ],
+        ]);
+        $this->seed(SitePagesSeeder::class);
+
+        foreach (range(1, 5) as $index) {
+            $product = Product::create([
+                'account_id' => $account->id,
+                'sku' => 'LOAD-'.$index,
+                'price' => 10 + $index,
+                'currency' => 'AED',
+                'quantity' => 5,
+                'status' => 'active',
+                'sort_order' => $index,
+            ]);
+            ProductTranslation::create([
+                'product_id' => $product->id,
+                'locale' => 'ar',
+                'name' => 'منتج تحميل '.$index,
+            ]);
+        }
+
+        $this->get('/products')
+            ->assertOk()
+            ->assertSee('منتج تحميل 1')
+            ->assertDontSee('منتج تحميل 5')
+            ->assertSee('المزيد من المنتجات')
+            ->assertSee('data-products-loader', false);
+
+        $nextPage = $this->getJson('/products?page=2&products_partial=1')
+            ->assertOk()
+            ->assertJsonPath('next_url', null);
+        self::assertStringContainsString('منتج تحميل 5', $nextPage->json('html'));
+
+        $account->update([
+            'settings' => array_merge($account->settings, ['products_load_mode' => 'pagination']),
+        ]);
+
+        $this->get('/products')
+            ->assertOk()
+            ->assertSee('web-pagination', false)
+            ->assertDontSee('data-products-loader', false);
     }
 
     public function test_terms_and_conditions_page_is_seeded_in_both_languages(): void

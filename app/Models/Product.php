@@ -10,11 +10,37 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected $fillable = ['account_id', 'sku', 'price', 'compare_at_price', 'currency', 'quantity', 'status', 'primary_image_path', 'metadata', 'options'];
+    protected $fillable = [
+        'account_id',
+        'sku',
+        'price',
+        'compare_at_price',
+        'currency',
+        'quantity',
+        'status',
+        'sort_order',
+        'primary_image_path',
+        'metadata',
+        'options',
+        'badge_is_active',
+        'badge_text_ar',
+        'badge_text_en',
+        'badge_style',
+        'badge_background_color',
+        'badge_text_color',
+    ];
 
     protected function casts(): array
     {
-        return ['status' => ProductStatus::class, 'price' => 'decimal:2', 'compare_at_price' => 'decimal:2', 'metadata' => AsArrayObject::class, 'options' => 'array'];
+        return [
+            'status' => ProductStatus::class,
+            'price' => 'decimal:2',
+            'compare_at_price' => 'decimal:2',
+            'sort_order' => 'integer',
+            'metadata' => AsArrayObject::class,
+            'options' => 'array',
+            'badge_is_active' => 'boolean',
+        ];
     }
 
     /** @return BelongsTo<Account, $this> */
@@ -53,5 +79,19 @@ class Product extends Model
         return $media->first(fn (ProductMedia $item): bool => $item->is_active && $item->locale === $locale)
             ?? $media->first(fn (ProductMedia $item): bool => $item->is_active && blank($item->locale))
             ?? $media->first(fn (ProductMedia $item): bool => $item->is_active);
+    }
+
+    public function badgeLabel(?string $locale = null): ?string
+    {
+        $locale ??= app()->getLocale();
+
+        return $locale === 'en'
+            ? ($this->badge_text_en ?: $this->badge_text_ar ?: 'Featured offer')
+            : ($this->badge_text_ar ?: $this->badge_text_en ?: 'عرض مميز');
+    }
+
+    public function hasVisibleBadge(?string $locale = null): bool
+    {
+        return $this->badge_is_active && filled($this->badgeLabel($locale));
     }
 }

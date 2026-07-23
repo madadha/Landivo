@@ -66,6 +66,32 @@
     $productsDescription = $isArabic
         ? ($settings['home_products_description_ar'] ?? 'تعرّف على أحدث المنتجات والعروض المتوفرة.')
         : ($settings['home_products_description_en'] ?? 'Explore our latest products and available offers.');
+    $productsKicker = $isArabic ? ($settings['home_products_kicker_ar'] ?? 'مختارة لك') : ($settings['home_products_kicker_en'] ?? 'Selected for you');
+    $productsViewAll = $isArabic ? ($settings['home_products_view_all_ar'] ?? 'عرض الكل') : ($settings['home_products_view_all_en'] ?? 'View all');
+    $features = collect($settings['home_features'] ?? [
+        ['icon' => 'quality', 'title_ar' => 'جودة مختارة', 'title_en' => 'Selected quality', 'subtitle_ar' => 'منتجات نفخر بتقديمها', 'subtitle_en' => 'Products we are proud to offer', 'is_active' => true],
+        ['icon' => 'delivery', 'title_ar' => 'توصيل سريع', 'title_en' => 'Fast delivery', 'subtitle_ar' => 'حتى باب منزلك', 'subtitle_en' => 'Straight to your doorstep', 'is_active' => true],
+        ['icon' => 'support', 'title_ar' => 'خدمة متواصلة', 'title_en' => 'Continuous support', 'subtitle_ar' => 'نحن هنا لمساعدتك', 'subtitle_en' => 'We are here to help', 'is_active' => true],
+        ['icon' => 'secure', 'title_ar' => 'شراء آمن', 'title_en' => 'Secure shopping', 'subtitle_ar' => 'تجربة واضحة وموثوقة', 'subtitle_en' => 'A clear and trusted experience', 'is_active' => true],
+    ])->filter(fn ($feature) => $feature['is_active'] ?? true);
+    $featureIcons = [
+        'quality' => 'M12 3l2.3 4.7L19.5 9l-3.8 3.7.9 5.3-4.6-2.5L7.4 18l.9-5.3L4.5 9l5.2-1.3L12 3z',
+        'delivery' => 'M3 6h11v10H3V6zm11 4h3l3 3v3h-6v-6zM7 19a2 2 0 110-4 2 2 0 010 4zm10 0a2 2 0 110-4 2 2 0 010 4z',
+        'support' => 'M12 3a8 8 0 00-8 8v5a3 3 0 003 3h2v-7H6v-1a6 6 0 0112 0v1h-3v7h2a3 3 0 003-3v-5a8 8 0 00-8-8z',
+        'secure' => 'M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4zm-1.1 13.5l5-5-1.4-1.4-3.6 3.6-1.7-1.7-1.4 1.4 3.1 3.1z',
+    ];
+    $aboutImage = $settings['home_about_image'] ?? null;
+    $aboutKicker = $isArabic ? ($settings['home_about_kicker_ar'] ?? 'قصتنا') : ($settings['home_about_kicker_en'] ?? 'Our story');
+    $aboutTitle = $isArabic ? ($settings['home_about_title_ar'] ?? 'نختار الأفضل لنقدمه لك') : ($settings['home_about_title_en'] ?? 'We select the best for you');
+    $aboutDescription = $isArabic
+        ? ($settings['home_about_description_ar'] ?? $account?->company_details ?? $account?->description)
+        : ($settings['home_about_description_en'] ?? $settings['company_details_en'] ?? $settings['description_en'] ?? $account?->company_details ?? $account?->description);
+    $aboutButton = $isArabic ? ($settings['home_about_button_ar'] ?? 'اعرف المزيد عنا') : ($settings['home_about_button_en'] ?? 'Learn more about us');
+    $campaignsKicker = $isArabic ? ($settings['home_campaigns_kicker_ar'] ?? 'عروض مباشرة') : ($settings['home_campaigns_kicker_en'] ?? 'Live offers');
+    $campaignsTitle = $isArabic ? ($settings['home_campaigns_title_ar'] ?? 'اكتشف عروضنا') : ($settings['home_campaigns_title_en'] ?? 'Discover our offers');
+    $campaignCardLabel = $isArabic ? ($settings['home_campaign_card_label_ar'] ?? 'عرض متاح') : ($settings['home_campaign_card_label_en'] ?? 'Available offer');
+    $campaignButton = $isArabic ? ($settings['home_campaign_button_ar'] ?? 'مشاهدة العرض') : ($settings['home_campaign_button_en'] ?? 'View offer');
+    $campaignColumns = max(2, min(3, (int) ($settings['home_campaigns_columns'] ?? 3)));
 @endphp
 @if($settings['home_slider_enabled'] ?? true)
 <section class="web-hero" data-slider data-interval="{{ $sliderInterval }}">
@@ -78,16 +104,19 @@
 </section>
 @endif
 
-<section class="web-trust"><div class="web-container web-trust-grid">
-    <div><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.3 4.7L19.5 9l-3.8 3.7.9 5.3-4.6-2.5L7.4 18l.9-5.3L4.5 9l5.2-1.3L12 3z"/></svg></i><span><strong>{{ $isArabic?'جودة مختارة':'Selected quality' }}</strong><small>{{ $isArabic?'منتجات نفخر بتقديمها':'Products we are proud to offer' }}</small></span></div>
-    <div><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3V6zm11 4h3l3 3v3h-6v-6zM7 19a2 2 0 110-4 2 2 0 010 4zm10 0a2 2 0 110-4 2 2 0 010 4z"/></svg></i><span><strong>{{ $isArabic?'توصيل سريع':'Fast delivery' }}</strong><small>{{ $isArabic?'حتى باب منزلك':'Straight to your doorstep' }}</small></span></div>
-    <div><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a8 8 0 00-8 8v5a3 3 0 003 3h2v-7H6v-1a6 6 0 0112 0v1h-3v7h2a3 3 0 003-3v-5a8 8 0 00-8-8z"/></svg></i><span><strong>{{ $isArabic?'خدمة متواصلة':'Continuous support' }}</strong><small>{{ $isArabic?'نحن هنا لمساعدتك':'We are here to help' }}</small></span></div>
-    <div><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4zm-1.1 13.5l5-5-1.4-1.4-3.6 3.6-1.7-1.7-1.4 1.4 3.1 3.1z"/></svg></i><span><strong>{{ $isArabic?'شراء آمن':'Secure shopping' }}</strong><small>{{ $isArabic?'تجربة واضحة وموثوقة':'A clear and trusted experience' }}</small></span></div>
+@if(($settings['home_features_enabled'] ?? true) && $features->isNotEmpty())
+<section class="web-trust"><div class="web-container web-trust-grid" style="--feature-count:{{ min(4, $features->count()) }}">
+    @foreach($features as $feature)
+        <div><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{ $featureIcons[$feature['icon'] ?? 'quality'] ?? $featureIcons['quality'] }}"/></svg></i><span><strong>{{ $feature[$isArabic ? 'title_ar' : 'title_en'] ?? '' }}</strong><small>{{ $feature[$isArabic ? 'subtitle_ar' : 'subtitle_en'] ?? '' }}</small></span></div>
+    @endforeach
 </div></section>
+@endif
 
-@if(($settings['home_show_products']??true)&&$products->isNotEmpty())<section class="web-section web-products-section"><div class="web-container"><header class="web-section-head"><div><span>{{ $isArabic?'مختارة لك':'Selected for you' }}</span><h2>{{ $productsTitle }}</h2><p>{{ $productsDescription }}</p></div><a href="{{ optional($sitePages->firstWhere('template','products'))->slug ? route('site.pages.show',$sitePages->firstWhere('template','products')->slug) : url('/products') }}">{{ $isArabic?'عرض الكل':'View all' }} ←</a></header><div class="web-products-grid" style="--home-product-columns:{{ $productColumns }};--home-product-mobile-columns:{{ $productMobileColumns }}">@foreach($products as $product)@include('site.partials.product-card',['product'=>$product])@endforeach</div></div></section>@endif
+@if(($settings['home_show_products']??true)&&$products->isNotEmpty())<section class="web-section web-products-section"><div class="web-container"><header class="web-section-head"><div><span>{{ $productsKicker }}</span><h2>{{ $productsTitle }}</h2><p>{{ $productsDescription }}</p></div><a href="{{ optional($sitePages->firstWhere('template','products'))->slug ? route('site.pages.show',$sitePages->firstWhere('template','products')->slug) : url('/products') }}">{{ $productsViewAll }} ←</a></header><div class="web-products-grid" style="--home-product-columns:{{ $productColumns }};--home-product-mobile-columns:{{ $productMobileColumns }}">@foreach($products as $product)@include('site.partials.product-card',['product'=>$product])@endforeach</div></div></section>@endif
 
-<section class="web-about-band"><div class="web-container web-about-grid"><div class="web-about-visual"><div>@if($account?->logo_path)<img src="{{ Storage::disk('public')->url($account->logo_path) }}" alt="{{ $account->name }}">@endif<strong>{{ $account?->name }}</strong><span>{{ $isArabic?'ثقة تبدأ من الجودة':'Trust begins with quality' }}</span></div></div><div class="web-about-copy"><span>{{ $isArabic?'قصتنا':'Our story' }}</span><h2>{{ $isArabic?'نختار الأفضل لنقدمه لك':'We select the best for you' }}</h2><p>{{ $isArabic ? ($account?->company_details ?: $account?->description) : ($settings['company_details_en'] ?? $settings['description_en'] ?? $account?->company_details ?? $account?->description) }}</p>@if($about=$sitePages->firstWhere('template','about'))<a href="{{ route('site.pages.show',$about->slug) }}">{{ $isArabic?'اعرف المزيد عنا':'Learn more about us' }} ←</a>@endif</div></div></section>
+@if($settings['home_about_enabled'] ?? true)
+<section class="web-about-band"><div class="web-container web-about-grid"><div class="web-about-visual">@if($aboutImage)<img class="web-about-photo" src="{{ Storage::disk('public')->url($aboutImage) }}" alt="{{ $aboutTitle }}">@endif<div>@if(!$aboutImage && $account?->logo_path)<img src="{{ Storage::disk('public')->url($account->logo_path) }}" alt="{{ $account->name }}">@endif@if(!$aboutImage)<strong>{{ $account?->name }}</strong><span>{{ $isArabic?'ثقة تبدأ من الجودة':'Trust begins with quality' }}</span>@endif</div></div><div class="web-about-copy"><span>{{ $aboutKicker }}</span><h2>{{ $aboutTitle }}</h2><p>{{ $aboutDescription }}</p>@php($aboutUrl=$settings['home_about_url']??(($about=$sitePages->firstWhere('template','about'))?route('site.pages.show',$about->slug):null))@if($aboutUrl)<a href="{{ $aboutUrl }}" @if($settings['home_about_new_tab']??false) target="_blank" rel="noopener" @endif>{{ $aboutButton }} ←</a>@endif</div></div></section>
+@endif
 
-@if(($settings['home_show_campaigns']??true)&&$campaigns->isNotEmpty())<section class="web-section web-campaigns"><div class="web-container"><header class="web-section-head"><div><span>{{ $isArabic?'عروض مباشرة':'Live offers' }}</span><h2>{{ $isArabic?'اكتشف عروضنا':'Discover our offers' }}</h2></div></header><div class="web-campaign-grid">@foreach($campaigns as $campaign)@php($tr=$campaign->translations->firstWhere('locale',app()->getLocale())?:$campaign->translations->first()) @php($image=data_get($campaign->settings,$isArabic?'product_image_ar':'product_image_en')?:data_get($campaign->settings,'product_image_ar'))<a href="{{ route('landing-pages.show',$campaign->slug) }}" class="web-campaign-card">@if($image)<img src="{{ Storage::disk('public')->url($image) }}" alt="{{ $tr?->title }}">@endif<div><span>{{ $isArabic?'عرض متاح':'Available offer' }}</span><h3>{{ $tr?->title??$campaign->slug }}</h3><b>{{ $isArabic?'مشاهدة العرض':'View offer' }} ←</b></div></a>@endforeach</div></div></section>@endif
+@if(($settings['home_show_campaigns']??true)&&$campaigns->isNotEmpty())<section class="web-section web-campaigns"><div class="web-container"><header class="web-section-head"><div><span>{{ $campaignsKicker }}</span><h2>{{ $campaignsTitle }}</h2></div></header><div class="web-campaign-grid" style="--campaign-columns:{{ $campaignColumns }}">@foreach($campaigns as $campaign)@php($tr=$campaign->translations->firstWhere('locale',app()->getLocale())?:$campaign->translations->first()) @php($image=data_get($campaign->settings,$isArabic?'product_image_ar':'product_image_en')?:data_get($campaign->settings,'product_image_ar'))<a href="{{ route('landing-pages.show',$campaign->slug) }}" class="web-campaign-card">@if($image)<img src="{{ Storage::disk('public')->url($image) }}" alt="{{ $tr?->title }}">@endif<div><span>{{ $campaignCardLabel }}</span><h3>{{ $tr?->title??$campaign->slug }}</h3><b>{{ $campaignButton }} ←</b></div></a>@endforeach</div></div></section>@endif
 @endsection

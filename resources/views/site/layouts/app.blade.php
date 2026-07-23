@@ -19,6 +19,13 @@
     if ($footerMenu->isEmpty()) {
         $footerMenu = collect([['label' => $isArabic ? 'الرئيسية' : 'Home', 'url' => route('site.home'), 'new_tab' => false]])->concat($sitePages->where('show_in_footer', true)->map(fn ($page) => ['label' => $page->translation()?->navigation_label ?: $page->translation()?->title ?: $page->slug, 'url' => route('site.pages.show', $page->slug), 'new_tab' => false]));
     }
+    $localized = fn (string $key, mixed $fallback = null) => $settings[$key.'_'.($isArabic ? 'ar' : 'en')] ?? $fallback;
+    $footerLogo = $settings['footer_logo_path'] ?? $account?->logo_path;
+    $footerDescription = $localized('footer_description', $isArabic
+        ? ($account?->description ?: 'منتجات مختارة بعناية وتجربة شراء موثوقة.')
+        : ($settings['description_en'] ?? $account?->description ?? 'Carefully selected products and a trusted shopping experience.'));
+    $copyrightTemplate = $localized('footer_copyright', $isArabic ? 'جميع الحقوق محفوظة © {year} {company}' : 'All rights reserved © {year} {company}');
+    $footerCopyright = str_replace(['{year}', '{company}'], [now()->year, $account?->name ?? 'Landivo'], $copyrightTemplate);
 @endphp
 <!doctype html>
 <html lang="{{ $isArabic ? 'ar' : 'en' }}" dir="{{ $isArabic ? 'rtl' : 'ltr' }}">
@@ -29,6 +36,7 @@
     @if($account?->favicon_path)<link rel="icon" href="{{ Storage::disk('public')->url($account->favicon_path) }}">@endif
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="stylesheet" href="{{ asset('css/site.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/product-badges.css') }}?v={{ filemtime(public_path('css/product-badges.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ filemtime(public_path('css/fonts.css')) }}">
     @stack('styles')
     {!! $settings['seo_head_code'] ?? '' !!}
@@ -49,19 +57,21 @@
 
     <main>@yield('content')</main>
 
-    <footer class="web-footer">
+    @if($settings['footer_enabled'] ?? true)
+    <footer class="web-footer" style="--footer-bg:{{ $settings['footer_background_color'] ?? '#0b1428' }};--footer-text:{{ $settings['footer_text_color'] ?? '#aeb7c7' }};--footer-accent:{{ $settings['footer_accent_color'] ?? '#d8e77a' }}">
         <div class="web-container web-footer-grid">
             <div class="web-footer-brand">
-                <a class="web-brand" href="{{ route('site.home') }}">@if($account?->logo_path)<img src="{{ Storage::disk('public')->url($account->logo_path) }}" alt="{{ $account->name }}">@else<strong>{{ $account?->name ?? 'Landivo' }}</strong>@endif</a>
-                <p>{{ $isArabic ? ($account?->description ?: 'منتجات مختارة بعناية وتجربة شراء موثوقة.') : ($settings['description_en'] ?? $account?->description ?? 'Carefully selected products and a trusted shopping experience.') }}</p>
+                <a class="web-brand" href="{{ route('site.home') }}">@if($footerLogo)<img src="{{ Storage::disk('public')->url($footerLogo) }}" alt="{{ $account?->name }}">@else<strong>{{ $account?->name ?? 'Landivo' }}</strong>@endif</a>
+                <p>{{ $footerDescription }}</p>
                 @if($socialLinks->isNotEmpty())<div class="web-socials">@foreach($socialLinks as $social)<a class="web-social web-social-{{ $social['platform'] ?? 'website' }}" href="{{ $social['url'] }}" target="_blank" rel="noopener" aria-label="{{ $social['label'] ?? $social['platform'] ?? 'Social' }}"></a>@endforeach</div>@endif
             </div>
-            <div><h3>{{ $isArabic ? 'روابط سريعة' : 'Quick links' }}</h3><div class="web-footer-links">@foreach($footerMenu as $item)<a href="{{ $item['url'] }}" @if($item['new_tab']) target="_blank" rel="noopener" @endif>{{ $item['label'] }}</a>@endforeach</div></div>
-            <div><h3>{{ $isArabic ? 'تواصل معنا' : 'Contact us' }}</h3><div class="web-contact-list">@if(!empty($settings['contact_phone']))<a href="tel:{{ $settings['contact_phone'] }}">{{ $settings['contact_phone'] }}</a>@endif @if(!empty($settings['contact_email']))<a href="mailto:{{ $settings['contact_email'] }}">{{ $settings['contact_email'] }}</a>@endif @if(!empty($settings[$isArabic ? 'contact_address_ar' : 'contact_address_en']))<span>{{ $settings[$isArabic ? 'contact_address_ar' : 'contact_address_en'] }}</span>@endif</div></div>
-            <div class="web-footer-cta"><h3>{{ $isArabic ? 'هل تحتاج مساعدة؟' : 'Need help?' }}</h3><p>{{ $isArabic ? 'فريقنا جاهز لمساعدتك واختيار العرض المناسب.' : 'Our team is ready to help you choose the right offer.' }}</p>@if(!empty($settings['contact_whatsapp']))<a href="{{ \App\Support\WhatsAppUrl::make($settings['contact_whatsapp'], '', $account?->phone_country_code) }}" target="_blank">{{ $isArabic ? 'تواصل عبر واتساب' : 'Chat on WhatsApp' }}</a>@endif</div>
+            <div><h3>{{ $localized('footer_links_title', $isArabic ? 'روابط سريعة' : 'Quick links') }}</h3><div class="web-footer-links">@foreach($footerMenu as $item)<a href="{{ $item['url'] }}" @if($item['new_tab']) target="_blank" rel="noopener" @endif>{{ $item['label'] }}</a>@endforeach</div></div>
+            <div><h3>{{ $localized('footer_contact_title', $isArabic ? 'تواصل معنا' : 'Contact us') }}</h3><div class="web-contact-list">@if(!empty($settings['contact_phone']))<a href="tel:{{ $settings['contact_phone'] }}">{{ $settings['contact_phone'] }}</a>@endif @if(!empty($settings['contact_email']))<a href="mailto:{{ $settings['contact_email'] }}">{{ $settings['contact_email'] }}</a>@endif @if(!empty($settings[$isArabic ? 'contact_address_ar' : 'contact_address_en']))<span>{{ $settings[$isArabic ? 'contact_address_ar' : 'contact_address_en'] }}</span>@endif</div></div>
+            <div class="web-footer-cta"><h3>{{ $localized('footer_help_title', $isArabic ? 'هل تحتاج مساعدة؟' : 'Need help?') }}</h3><p>{{ $localized('footer_help_text', $isArabic ? 'فريقنا جاهز لمساعدتك واختيار العرض المناسب.' : 'Our team is ready to help you choose the right offer.') }}</p>@if(!empty($settings['contact_whatsapp']))<a href="{{ \App\Support\WhatsAppUrl::make($settings['contact_whatsapp'], '', $account?->phone_country_code) }}" target="_blank">{{ $localized('footer_whatsapp_button', $isArabic ? 'تواصل عبر واتساب' : 'Chat on WhatsApp') }}</a>@endif</div>
         </div>
-        <div class="web-container web-footer-bottom"><span>{{ $isArabic ? 'جميع الحقوق محفوظة' : 'All rights reserved' }} © {{ now()->year }} {{ $account?->name ?? 'Landivo' }}</span><span>{{ $isArabic ? 'تجربة رقمية موثوقة' : 'A trusted digital experience' }}</span></div>
+        <div class="web-container web-footer-bottom"><span>{{ $footerCopyright }}</span><span>{{ $localized('footer_trust', $isArabic ? 'تجربة رقمية موثوقة' : 'A trusted digital experience') }}</span></div>
     </footer>
+    @endif
     @if(!empty($settings['contact_whatsapp']))<a class="web-floating-wa" href="{{ \App\Support\WhatsAppUrl::make($settings['contact_whatsapp'], '', $account?->phone_country_code) }}" target="_blank" aria-label="WhatsApp"><span>◔</span></a>@endif
     <script>
         (()=>{const button=document.querySelector('[data-menu-button]'),menu=document.querySelector('[data-menu]');button?.addEventListener('click',()=>{button.classList.toggle('open');menu.classList.toggle('open')});document.querySelectorAll('[data-slider]').forEach(slider=>{const slides=[...slider.querySelectorAll('[data-slide]')],dots=[...slider.querySelectorAll('[data-dot]')];if(!slides.length)return;let index=0,timer;const interval=Math.max(2000,Number(slider.dataset.interval)||6000);const show=i=>{index=(i+slides.length)%slides.length;slides.forEach((s,n)=>s.classList.toggle('active',n===index));dots.forEach((d,n)=>d.classList.toggle('active',n===index))};const start=()=>{clearInterval(timer);if(slides.length>1)timer=setInterval(()=>show(index+1),interval)};dots.forEach((dot,i)=>dot.addEventListener('click',()=>{show(i);start()}));slider.querySelector('[data-next]')?.addEventListener('click',()=>{show(index+1);start()});slider.querySelector('[data-prev]')?.addEventListener('click',()=>{show(index-1);start()});slider.addEventListener('mouseenter',()=>clearInterval(timer));slider.addEventListener('mouseleave',start);show(0);start()});document.querySelectorAll('[data-product-gallery]').forEach(gallery=>{const main=gallery.querySelector('[data-main-image]');gallery.querySelectorAll('[data-gallery-thumb]').forEach(thumb=>thumb.addEventListener('click',()=>{if(main)main.src=thumb.dataset.image;gallery.querySelectorAll('[data-gallery-thumb]').forEach(item=>item.classList.remove('active'));thumb.classList.add('active')}))})})();
