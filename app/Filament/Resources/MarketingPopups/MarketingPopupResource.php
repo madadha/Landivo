@@ -30,7 +30,7 @@ class MarketingPopupResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'التسويق';
 
-    protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 10;
 
     public static function getEloquentQuery(): Builder
     {

@@ -26,7 +26,11 @@ class SystemSettings extends Page
 
     protected static ?string $slug = 'system-settings';
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'إدارة النظام';
+
+    protected static ?int $navigationSort = 30;
 
     protected string $view = 'filament.pages.system-settings';
 

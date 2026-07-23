@@ -21,7 +21,9 @@ class ThankYouPageResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCheckCircle;
 
-    protected static ?int $navigationSort = 4;
+    protected static string|\UnitEnum|null $navigationGroup = 'صفحات الهبوط';
+
+    protected static ?int $navigationSort = 30;
 
     public static function getNavigationLabel(): string
     {

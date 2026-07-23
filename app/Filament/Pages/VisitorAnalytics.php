@@ -15,9 +15,9 @@ class VisitorAnalytics extends Page
 
     protected static ?string $navigationLabel = 'تحليلات الزوار';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'التقارير';
+    protected static string|\UnitEnum|null $navigationGroup = 'التقارير والتحليلات';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 20;
 
     protected static ?string $title = 'تحليلات الزوار';
 

@@ -27,7 +27,9 @@ class MediaAssetResource extends Resource
 
     protected static ?string $pluralModelLabel = 'مكتبة الوسائط';
 
-    protected static ?int $navigationSort = 35;
+    protected static string|\UnitEnum|null $navigationGroup = 'الكتالوج والمخزون';
+
+    protected static ?int $navigationSort = 20;
 
     public static function getNavigationBadge(): ?string
     {

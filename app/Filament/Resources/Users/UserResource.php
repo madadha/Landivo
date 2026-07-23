@@ -16,6 +16,8 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+    protected static string|\UnitEnum|null $navigationGroup = 'إدارة النظام';
+    protected static ?int $navigationSort = 10;
     public static function getNavigationLabel(): string { return 'المستخدمون'; }
     public static function getModelLabel(): string { return 'مستخدم'; }
     public static function getPluralModelLabel(): string { return 'المستخدمون'; }

@@ -19,9 +19,9 @@ class ReviewsReport extends Page
 
     protected static ?string $navigationLabel = 'تقرير التقييمات';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'التقارير';
+    protected static string|\UnitEnum|null $navigationGroup = 'التقارير والتحليلات';
 
-    protected static ?int $navigationSort = 30;
+    protected static ?int $navigationSort = 50;
 
     protected static ?string $title = 'تقرير التقييمات';
 

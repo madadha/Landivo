@@ -31,6 +31,8 @@ class ContactMessageResource extends Resource
 
     protected static ?string $pluralModelLabel = 'رسائل التواصل';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'العملاء والتواصل';
+
     protected static ?int $navigationSort = 20;
 
     public static function getEloquentQuery(): Builder

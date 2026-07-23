@@ -20,7 +20,9 @@ class LandingPageGallery extends Page
 
     protected static ?string $navigationLabel = 'معرض صفحات الهبوط';
 
-    protected static ?int $navigationSort = 3;
+    protected static string|\UnitEnum|null $navigationGroup = 'صفحات الهبوط';
+
+    protected static ?int $navigationSort = 20;
 
     protected static ?string $title = 'معرض صفحات الهبوط';
 

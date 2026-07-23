@@ -21,9 +21,9 @@ class OrderExportReport extends Page
 
     protected static ?string $navigationLabel = 'تصدير الطلبات';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'التقارير';
+    protected static string|\UnitEnum|null $navigationGroup = 'التقارير والتحليلات';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 40;
 
     protected static ?string $title = 'تصدير الطلبات';
 

@@ -26,9 +26,9 @@ class HomepageSettings extends Page
 
     protected static ?string $title = 'إدارة الصفحة الرئيسية';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'الموقع';
+    protected static string|\UnitEnum|null $navigationGroup = 'الموقع والمحتوى';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $slug = 'homepage-settings';
 

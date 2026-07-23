@@ -15,6 +15,8 @@ class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static string|\UnitEnum|null $navigationGroup = 'إدارة النظام';
+    protected static ?int $navigationSort = 20;
     public static function getNavigationLabel(): string { return 'الصلاحيات والأدوار'; }
     public static function getModelLabel(): string { return 'دور'; }
     public static function getPluralModelLabel(): string { return 'الصلاحيات والأدوار'; }

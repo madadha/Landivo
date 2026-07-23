@@ -18,7 +18,7 @@ class AuditLogPage extends Page
 
     protected static ?string $navigationLabel = 'سجل التدقيق';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'التقارير';
+    protected static string|\UnitEnum|null $navigationGroup = 'إدارة النظام';
 
     protected static ?int $navigationSort = 40;
 

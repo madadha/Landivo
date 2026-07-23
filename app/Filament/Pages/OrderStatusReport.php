@@ -14,8 +14,8 @@ class OrderStatusReport extends Page
 {
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
     protected static ?string $navigationLabel = 'تقرير حالات الطلبات';
-    protected static string|\UnitEnum|null $navigationGroup = 'التقارير';
-    protected static ?int $navigationSort = 15;
+    protected static string|\UnitEnum|null $navigationGroup = 'التقارير والتحليلات';
+    protected static ?int $navigationSort = 30;
     protected static ?string $title = 'تقرير حالات الطلبات';
     protected static ?string $slug = 'order-status-report';
     protected string $view = 'filament.pages.order-status-report';

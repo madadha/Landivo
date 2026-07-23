@@ -21,6 +21,10 @@ class ReviewResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedStar;
 
+    protected static string|\UnitEnum|null $navigationGroup = 'العملاء والتواصل';
+
+    protected static ?int $navigationSort = 30;
+
     public static function getNavigationLabel(): string
     {
         return __('landivo.navigation.reviews');
